@@ -9,8 +9,8 @@
 # [Aa]ssets/AssetStoreTools*
 
 # No need to commit plugins folder
-[Aa]ssets/Plugins.meta
-[Aa]ssets/Plugins
+/[Aa]ssets/Plugins.meta
+/[Aa]ssets/Plugins
 
 # Visual Studio cache directory
 .vs/
