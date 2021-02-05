@@ -13,5 +13,7 @@ public class RedBehavior : CubeBehavior
                 gameDynamics.Remove(col, row);
             }
         }
+
+        gameDynamics.AddScore(8);
     }
 }

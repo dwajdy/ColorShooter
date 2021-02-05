@@ -150,4 +150,9 @@ public class Settings : MonoBehaviour
     {
         return materials;
     }
+
+    public GameDynamics GetGameDynamics()
+    {
+        return gameDynamics;
+    }
 }

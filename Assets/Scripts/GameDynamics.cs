@@ -25,6 +25,7 @@ public class GameDynamics
         this.cubesMatrix[x,y] = cube;
     }
   
+    private uint score = 0;
     public void Replace(uint x, uint y, Material newMaterial, string newBehaviorTypeName)
     {
         if(x < 0 || x >= width || y < 0 || y >= height || cubesMatrix[x, y] == null)
@@ -50,6 +51,16 @@ public class GameDynamics
         cubesMatrix[x, y] = null;
         removeOperationPerformed = true;
         timeClick = System.DateTime.Now;
+    }
+
+    public void AddScore(uint addition)
+    {
+        score += addition;
+    }
+
+    public uint GetScore()
+    {
+        return score;
     }
 
     public bool Update()
@@ -109,6 +120,7 @@ public class GameDynamics
                            Remove((uint)(x-1), (uint)y);
                            Remove((uint)x,(uint)y);
                            Remove((uint)(x+1),(uint)y);
+                           AddScore(3);
                            return false;
                        }
                 }
@@ -124,6 +136,7 @@ public class GameDynamics
                            Remove((uint)x, (uint)(y-1));
                            Remove((uint)x,(uint)y);
                            Remove((uint)x,(uint)(y+1));
+                           AddScore(3);
                            return false;
                        }
                 }
