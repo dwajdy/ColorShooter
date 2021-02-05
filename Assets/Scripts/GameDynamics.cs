@@ -9,6 +9,10 @@ public class GameDynamics
     private uint width;
     private uint height;
     private bool removeOperationPerformed = false; // for optimization
+
+    private DateTime timeClick;
+    private const int timeToWaitAfterRemove= 1000;
+
     public void Init(uint width, uint height)
     {
         this.width = width;
@@ -45,11 +49,18 @@ public class GameDynamics
         UnityEngine.Object.Destroy(cubesMatrix[x, y]);
         cubesMatrix[x, y] = null;
         removeOperationPerformed = true;
+        timeClick = System.DateTime.Now;
     }
 
     public bool Update()
     {
         Debug.Log("Entering Update");
+
+        if( (System.DateTime.Now - timeClick).TotalMilliseconds < timeToWaitAfterRemove)
+        {
+            return false;
+        }
+
         // todo: update matrix by removing nulls and shifting cubes
         foreach(GameObject obj in cubesMatrix)
         {
@@ -80,6 +91,43 @@ public class GameDynamics
             }
 
             removeOperationPerformed = false;
+        }
+
+        // look for 3 in a row or col
+        for (int x = 0; x < cubesMatrix.GetLength(0); x++)
+        {
+            for (int y = cubesMatrix.GetLength(1) - 1; y >= 0; y--)
+            {
+                if (0 <= (x-1) && width > (x+1)) 
+                {
+                    if(cubesMatrix[x-1, y] != null &&
+                       cubesMatrix[x, y] != null &&
+                       cubesMatrix[x+1, y] != null &&
+                       cubesMatrix[x-1, y].GetComponent<MeshRenderer>().material.name.Equals(cubesMatrix[x, y].GetComponent<MeshRenderer>().material.name)&&
+                       cubesMatrix[x-1, y].GetComponent<MeshRenderer>().material.name.Equals(cubesMatrix[x+1, y].GetComponent<MeshRenderer>().material.name))
+                       {
+                           Remove((uint)(x-1), (uint)y);
+                           Remove((uint)x,(uint)y);
+                           Remove((uint)(x+1),(uint)y);
+                           return false;
+                       }
+                }
+
+                if (0 <= (y-1) && height > (y+1)) 
+                {
+                    if(cubesMatrix[x, y-1] != null &&
+                       cubesMatrix[x, y] != null &&
+                       cubesMatrix[x, y+1] != null &&
+                       cubesMatrix[x, y-1].GetComponent<MeshRenderer>().material.name.Equals(cubesMatrix[x, y].GetComponent<MeshRenderer>().material.name)&&
+                       cubesMatrix[x, y-1].GetComponent<MeshRenderer>().material.name.Equals(cubesMatrix[x, y+1].GetComponent<MeshRenderer>().material.name))
+                       {
+                           Remove((uint)x, (uint)(y-1));
+                           Remove((uint)x,(uint)y);
+                           Remove((uint)x,(uint)(y+1));
+                           return false;
+                       }
+                }
+            }
         }
 
         Debug.Log("Ending Update");
