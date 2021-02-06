@@ -10,10 +10,8 @@ public class RedBehavior : CubeBehavior
         {
             for(uint col = x==0 ? 0 :x-1; col <= x+1; ++col)
             {
-                gameDynamics.Remove(col, row);
+                gameDynamics.Remove(col, row, col==x && row==y ? false : true);
             }
         }
-
-        gameDynamics.AddScore(8);
     }
 }

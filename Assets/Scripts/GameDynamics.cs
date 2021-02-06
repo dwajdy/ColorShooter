@@ -10,6 +10,8 @@ public class GameDynamics
     private uint height;
     private bool removeOperationPerformed = false; // for optimization
 
+    private bool gameIsReady = false;
+
     private DateTime timeClick;
     private const int timeToWaitAfterRemove= 1000;
 
@@ -41,12 +43,18 @@ public class GameDynamics
         // that it takes the new one. Note that there's another version of Destory called DestroyImmediate (see https://docs.unity3d.com/ScriptReference/Object.DestroyImmediate.html#:~:text=In%20game%20code%20you%20should,executed%20within%20the%20same%20frame).)
     }
     
-    public void Remove(uint x, uint y)
+    public void Remove(uint x, uint y, bool increaseScore = false)
     {
         if(x < 0 || x >= width || y < 0 || y >= height || cubesMatrix[x, y] == null)
         {
             return;
         }
+
+        if(increaseScore && gameIsReady)
+        {
+            ++score;
+        }
+
         UnityEngine.Object.Destroy(cubesMatrix[x, y]);
         cubesMatrix[x, y] = null;
         removeOperationPerformed = true;
@@ -90,7 +98,7 @@ public class GameDynamics
         // after making sure everthing is settled, update matrix by bubbling null cube up
         if (removeOperationPerformed)
         {
-            for (uint x = 0; x < cubesMatrix.GetLength(0); x++)
+            for (uint x = 0; x < cubesMatrix.GetLength(0); ++x)
             {
                 for (int y = cubesMatrix.GetLength(1)-1; y >= 0 ; y--)
                 {
@@ -105,44 +113,56 @@ public class GameDynamics
         }
 
         // look for 3 in a row or col
-        for (int x = 0; x < cubesMatrix.GetLength(0); x++)
+        for (int x = 0; x < width; ++x)
         {
-            for (int y = cubesMatrix.GetLength(1) - 1; y >= 0; y--)
+            for (int y = cubesMatrix.GetLength(1) - 1; y >= 0; --y)
             {
-                if (0 <= (x-1) && width > (x+1)) 
+                if(cubesMatrix[x, y] == null)
                 {
-                    if(cubesMatrix[x-1, y] != null &&
-                       cubesMatrix[x, y] != null &&
-                       cubesMatrix[x+1, y] != null &&
-                       cubesMatrix[x-1, y].GetComponent<MeshRenderer>().material.name.Equals(cubesMatrix[x, y].GetComponent<MeshRenderer>().material.name)&&
-                       cubesMatrix[x-1, y].GetComponent<MeshRenderer>().material.name.Equals(cubesMatrix[x+1, y].GetComponent<MeshRenderer>().material.name))
-                       {
-                           Remove((uint)(x-1), (uint)y);
-                           Remove((uint)x,(uint)y);
-                           Remove((uint)(x+1),(uint)y);
-                           AddScore(3);
-                           return false;
-                       }
+                    continue;
                 }
 
-                if (0 <= (y-1) && height > (y+1)) 
+                int runX = x + 1;
+                while (runX < width &&
+                      cubesMatrix[runX, y] != null &&
+                      cubesMatrix[x, y].GetComponent<MeshRenderer>().material.name.Equals(cubesMatrix[runX, y].GetComponent<MeshRenderer>().material.name))
                 {
-                    if(cubesMatrix[x, y-1] != null &&
-                       cubesMatrix[x, y] != null &&
-                       cubesMatrix[x, y+1] != null &&
-                       cubesMatrix[x, y-1].GetComponent<MeshRenderer>().material.name.Equals(cubesMatrix[x, y].GetComponent<MeshRenderer>().material.name)&&
-                       cubesMatrix[x, y-1].GetComponent<MeshRenderer>().material.name.Equals(cubesMatrix[x, y+1].GetComponent<MeshRenderer>().material.name))
-                       {
-                           Remove((uint)x, (uint)(y-1));
-                           Remove((uint)x,(uint)y);
-                           Remove((uint)x,(uint)(y+1));
-                           AddScore(3);
-                           return false;
-                       }
+                    ++runX;
+                }
+
+                if ((runX - x) >= 3)
+                {
+                    for (int x_ = x; x_ < runX; ++x_)
+                    {
+                        Remove((uint)x_, (uint)y, true);
+                    }
+
+                    return false;
+                }
+
+
+                int runY = y - 1;
+                Debug.Log($"runY is:{runY} && runX is:{runX})");
+                while (runY >= 0 &&
+                      cubesMatrix[x, runY] != null &&
+                      cubesMatrix[x, y].GetComponent<MeshRenderer>().material.name.Equals(cubesMatrix[x, runY].GetComponent<MeshRenderer>().material.name))
+                {
+                    --runY;
+                }
+
+                if ((y - runY) >= 3)
+                {
+                    for (int y_ = y; y_ > runY; --y_)
+                    {
+                        Remove((uint)x, (uint)y_, true);
+                    }
+
+                    return false;
                 }
             }
         }
 
+        gameIsReady = true;
         Debug.Log("Ending Update");
         return true;
     }
