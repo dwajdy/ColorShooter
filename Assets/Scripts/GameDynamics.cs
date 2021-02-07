@@ -28,6 +28,8 @@ public class GameDynamics
     }
   
     private uint score = 0;
+    private bool isGameOver = false;
+
     public void Replace(uint x, uint y, Material newMaterial, string newBehaviorTypeName)
     {
         if(x < 0 || x >= width || y < 0 || y >= height || cubesMatrix[x, y] == null)
@@ -66,21 +68,43 @@ public class GameDynamics
         score += addition;
     }
 
+    internal void Reset()
+    {
+        score = 0;
+        isGameOver = false;
+
+        for (uint x = 0; x < cubesMatrix.GetLength(0); ++x)
+        {
+            for (int y = cubesMatrix.GetLength(1) - 1; y >= 0; y--)
+            {
+                UnityEngine.Object.Destroy(cubesMatrix[x, y]);
+            }
+        }
+    }
+
     public uint GetScore()
     {
         return score;
+    }
+
+    public bool GetIsGameOver()
+    {
+        return isGameOver;
     }
 
     public bool Update()
     {
         Debug.Log("Entering Update");
 
-        if( (System.DateTime.Now - timeClick).TotalMilliseconds < timeToWaitAfterRemove)
+        if( (System.DateTime.Now - timeClick).TotalMilliseconds < timeToWaitAfterRemove ||
+            isGameOver)
         {
             return false;
         }
 
         // todo: update matrix by removing nulls and shifting cubes
+        bool isNoCubesLeft = true;
+
         foreach(GameObject obj in cubesMatrix)
         {
             if(obj == null)
@@ -88,11 +112,19 @@ public class GameDynamics
                 continue;
             }
 
+            isNoCubesLeft = false;
+
             Rigidbody rb = obj.GetComponent<Rigidbody>();
             if(rb.velocity.magnitude > 0)
             {
                 return false;
             }
+        }
+
+        if(isNoCubesLeft)
+        {
+            isGameOver = true;
+            return true;
         }
 
         // after making sure everthing is settled, update matrix by bubbling null cube up

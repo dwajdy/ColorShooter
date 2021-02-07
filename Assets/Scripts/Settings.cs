@@ -30,6 +30,8 @@ public class Settings : MonoBehaviour
 
     private GameDynamics gameDynamics = new GameDynamics();
 
+    private bool isDoneCreatingCubes = false;
+
     void Awake()
     {
         if (BoardWidth == 0 ||
@@ -65,8 +67,27 @@ public class Settings : MonoBehaviour
 
         // special powers
     }
+    
+    public void onClick()
+    {
+        if(isDoneCreatingCubes)
+        {
+            IEnumerator  coroutine = RestartGame();
+            StartCoroutine(coroutine);
+        }
+    }
+    
     IEnumerator Start()
     {
+        return RestartGame();
+    }
+
+    public IEnumerator RestartGame()
+    {
+        isDoneCreatingCubes = false;
+
+        gameDynamics.Reset();
+
         var camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         var height = 2*Camera.main.orthographicSize;
         var width = height*Camera.main.aspect;
@@ -114,8 +135,9 @@ public class Settings : MonoBehaviour
                 yield return new WaitForSeconds(0.01f);
             }
         }
-    }
 
+        isDoneCreatingCubes = true;
+    }
     // Update is called once per frame
     void Update()
     {
