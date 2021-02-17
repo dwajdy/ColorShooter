@@ -19,6 +19,6 @@ public class ScoreBehavior : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        textComp.text = "Score:" + gameDynamics.GetScore();
+        textComp.text = "SCORE: " + gameDynamics.GetScore();
     }
 }

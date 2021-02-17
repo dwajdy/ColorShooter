@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor.Animations;
 using UnityEngine;
 using Random = System.Random;
 
@@ -25,6 +27,7 @@ public class Settings : MonoBehaviour
     private Colors[] basicColors = new Colors[] { Colors.Cyan, Colors.Yellow, Colors.Magenta, Colors.Black};
 
     private Dictionary<Colors, Material> materials = new Dictionary<Colors, Material>();
+    private Dictionary<Colors, AnimationClip> animations = new Dictionary<Colors, AnimationClip>();
     private Dictionary<Colors, float> probabilites = new Dictionary<Colors, float>();
     private Dictionary<Colors, string> specialPowers = new Dictionary<Colors, string>() {{Colors.Red, "RedBehavior"}, {Colors.White, "WhiteBehavior"}};
 
@@ -57,6 +60,12 @@ public class Settings : MonoBehaviour
         foreach (Colors color in Enum.GetValues(typeof(Colors)))
         {
             materials[color] = Resources.Load($"Materials/{color.ToString()}", typeof(Material)) as Material;
+        }
+
+        // initiaialize animations
+        foreach (Colors color in Enum.GetValues(typeof(Colors)))
+        {
+            animations[color] = Resources.Load($"Animations/{color.ToString()}Emission", typeof(AnimationClip)) as AnimationClip;
         }
 
         // set probabilites
@@ -115,6 +124,20 @@ public class Settings : MonoBehaviour
                         CubeBehavior cubeBehavior;
 
                         newObj.GetComponent<MeshRenderer>().material = materials[prob.Key];
+
+                        //AnimatorController controller = Resources.Load("Animations/Emission", typeof(AnimatorController)) as AnimatorController;
+                        //var state = controller.layers[0].stateMachine.states.FirstOrDefault(s => s.state.name.Equals("Emission")).state;
+                        //controller.SetStateEffectiveMotion(state, animations[prob.Key]);
+                        //Animator newAnim = newObj.AddComponent<Animator>();
+                        //newAnim.runtimeAnimatorController = new AnimatorOverrideController(controller);
+
+                        Animator newAnim = newObj.AddComponent<Animator>();
+                        AnimatorOverrideController animatorOverrideController = new AnimatorOverrideController(Resources.Load("Animations/Emission", typeof(AnimatorController)) as AnimatorController);
+                        newAnim.runtimeAnimatorController = animatorOverrideController;
+                        animatorOverrideController["RedEmission"] = animations[prob.Key];
+                        
+                        //clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
+                        
                         if(specialPowers.ContainsKey(prob.Key))
                         {
                             cubeBehavior = newObj.AddComponent(Type.GetType(specialPowers[prob.Key])) as CubeBehavior;
