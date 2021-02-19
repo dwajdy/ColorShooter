@@ -8,7 +8,8 @@ public class GunFire : MonoBehaviour
     private LineRenderer fireLine;
     private Light fireLight;
 
-    private const float shootingTime =0.2f;
+    private GameObject LightEffectOnGun;
+    private const float shootingTime =0.3f;
     private float timeFromStartShooting = 0.0f;
 
     private float lightZAxisOffset = 2.0f;
@@ -18,6 +19,7 @@ public class GunFire : MonoBehaviour
     {
         fireLight = this.GetComponent<Light>();
         fireLine = this.GetComponent<LineRenderer>();
+        LightEffectOnGun = this.transform.GetChild(0).gameObject;
     }
 
     // Update is called once per frame
@@ -34,6 +36,7 @@ public class GunFire : MonoBehaviour
     {
         fireLine.enabled = false;
         fireLight.enabled = false;
+        LightEffectOnGun.SetActive(false);
     }
 
     public void StartFire(GameObject objectToShoot)
@@ -46,6 +49,7 @@ public class GunFire : MonoBehaviour
 
         fireLight.color = objectToShoot.GetComponent<MeshRenderer>().material.color;
 
+        LightEffectOnGun.SetActive(true);
         fireLine.enabled = true;
         fireLight.enabled = true;
     }
