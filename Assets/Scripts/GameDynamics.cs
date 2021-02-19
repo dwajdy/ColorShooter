@@ -30,7 +30,7 @@ public class GameDynamics
     private uint score = 0;
     private bool isGameOver = false;
 
-    public void Replace(uint x, uint y, Material newMaterial, string newBehaviorTypeName)
+    public void Replace(uint x, uint y, Material newMaterial, AnimationClip newAnimaion, string newBehaviorTypeName)
     {
         if(x < 0 || x >= width || y < 0 || y >= height || cubesMatrix[x, y] == null)
         {
@@ -43,6 +43,10 @@ public class GameDynamics
         // learning!!!!! Destory doesn't remove immediately. so what happended here is that when I called GetComponent<CubeBehavior> I was gettig the old one! hence, updating
         // x and y was performed on the old one, not the new added one!!!!!!!!!! that's why when I called UpdateCoords() on the AddComponent() it worked, because it's guaranteed
         // that it takes the new one. Note that there's another version of Destory called DestroyImmediate (see https://docs.unity3d.com/ScriptReference/Object.DestroyImmediate.html#:~:text=In%20game%20code%20you%20should,executed%20within%20the%20same%20frame).)
+    
+        var anim = cubesMatrix[x, y].GetComponent<Animator>();
+        var animOverride = anim.runtimeAnimatorController as AnimatorOverrideController;
+        animOverride["RedEmission"] = newAnimaion;
     }
     
     public void Remove(uint x, uint y, bool increaseScore = false)

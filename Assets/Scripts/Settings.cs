@@ -33,8 +33,9 @@ public class Settings : MonoBehaviour
 
     private GameDynamics gameDynamics = new GameDynamics();
 
+    private GunFire gunFire;
     private bool isDoneCreatingCubes = false;
-
+    
     void Awake()
     {
         if (BoardWidth == 0 ||
@@ -74,7 +75,7 @@ public class Settings : MonoBehaviour
         float othersProbability = (1.0f - RedCubesProbability - WhiteCubesProbability) / 4;
         probabilites[Colors.Cyan] = probabilites[Colors.Yellow] = probabilites[Colors.Magenta] = probabilites[Colors.Black] = othersProbability;
 
-        // special powers
+        gunFire = GameObject.FindGameObjectWithTag("GunHead").GetComponent<GunFire>();
     }
     
     public void onClick()
@@ -97,7 +98,6 @@ public class Settings : MonoBehaviour
 
         gameDynamics.Reset();
 
-        var camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         var height = 2*Camera.main.orthographicSize;
         var width = height*Camera.main.aspect;
 
@@ -180,6 +180,8 @@ public class Settings : MonoBehaviour
                    {
                        Debug.Log("Hit a cube!");
                        hit.transform.gameObject.GetComponent<CubeBehavior>().Hit(gameDynamics, this);
+                       Camera.main.GetComponent<Animator>().SetTrigger("IsCubeShot");
+                       gunFire.StartFire(hit.transform.gameObject);
                    }
             }
             Debug.Log("Ending mouse if.");
@@ -194,6 +196,11 @@ public class Settings : MonoBehaviour
     public Dictionary<Colors, Material> GetMaterials()
     {
         return materials;
+    }
+
+    public Dictionary<Colors, AnimationClip> GetAnimations()
+    {
+        return animations;
     }
 
     public GameDynamics GetGameDynamics()

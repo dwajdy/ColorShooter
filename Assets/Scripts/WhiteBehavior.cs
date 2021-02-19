@@ -7,6 +7,7 @@ public class WhiteBehavior : CubeBehavior
     {
         Settings.Colors[] basicColors = gameSettings.GetBasicColors();
         Dictionary<Settings.Colors, Material> materials = gameSettings.GetMaterials();
+        Dictionary<Settings.Colors, AnimationClip> animations = gameSettings.GetAnimations();
 
         System.Random random = new System.Random();
         Settings.Colors choosenColor = basicColors[random.Next(0, basicColors.Length)];
@@ -15,7 +16,7 @@ public class WhiteBehavior : CubeBehavior
         {
             for(uint col = x==0 ? 0 :x-1; col <= x+1; ++col)
             {
-                gameDynamics.Replace(col, row, materials[choosenColor], "CubeBehavior");
+                gameDynamics.Replace(col, row, materials[choosenColor], animations[choosenColor], "CubeBehavior");
             }
         }
 
