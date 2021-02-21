@@ -9,12 +9,15 @@ using Random = System.Random;
 public class Settings : MonoBehaviour
 {
 
-    [Header("Game Settings")]
+    [Header("Basic Settings")]
     public uint BoardWidth = 0;
     public uint BoardHeight = 0;
     public float WhiteCubesProbability = 0;
     public float RedCubesProbability = 0;
     public  uint PointsPerDestroyedCube = 0;
+
+    [Header("Extras")]
+    public bool FirstPersonCameraEffect = true;
 
     // Start is called before the first frame update
     public enum Colors{
@@ -59,6 +62,11 @@ public class Settings : MonoBehaviour
             #else
                             //Application.Quit();
             #endif
+        }
+
+        if(FirstPersonCameraEffect == false)
+        {
+            Camera.main.GetComponent<FirstPersonCameraMode>().enabled = false;
         }
 
         // initialize the materials
