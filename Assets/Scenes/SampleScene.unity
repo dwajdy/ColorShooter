@@ -2054,9 +2054,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d28466eea77c770428df35542c20060c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BoardWidth: 10
-  BoardHeight: 7
-  WhiteCubesProbability: 0.1
+  BoardWidth: 3
+  BoardHeight: 3
+  WhiteCubesProbability: 0.9
   RedCubesProbability: 0.05
   PointsPerDestroyedCube: 5
 --- !u!1 &1315125908

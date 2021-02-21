@@ -191,6 +191,11 @@ public class Settings : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(! isDoneCreatingCubes)
+        {
+            return;
+        }
+
         bool calculationDone = gameDynamics.Update();
 
         if (Input.GetMouseButtonDown(0) && calculationDone)
