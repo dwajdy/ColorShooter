@@ -172,7 +172,7 @@ public class Settings : MonoBehaviour
                         Animator newAnim = newObj.AddComponent<Animator>();
                         AnimatorOverrideController animatorOverrideController = new AnimatorOverrideController(Resources.Load("Animations/Emission", typeof(AnimatorController)) as AnimatorController);
                         newAnim.runtimeAnimatorController = animatorOverrideController;
-                        animatorOverrideController["RedEmission"] = animations[prob.Key];
+                        animatorOverrideController["EmissionPlaceholder"] = animations[prob.Key];
                         
                         //clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
                         

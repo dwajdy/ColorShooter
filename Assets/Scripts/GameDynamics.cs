@@ -53,7 +53,7 @@ public class GameDynamics
     
         var anim = cubesMatrix[x, y].GetComponent<Animator>();
         var animOverride = anim.runtimeAnimatorController as AnimatorOverrideController;
-        animOverride["RedEmission"] = newAnimaion;
+        animOverride["EmissionPlaceholder"] = newAnimaion;
 
         soundEffectsManager.PlayReplace();
     }
@@ -198,8 +198,11 @@ public class GameDynamics
                     return false;
                 }
 
-
+               
                 int runY = y - 1;
+                Debug.Log($"(x, y)=({x}, {y}) material={cubesMatrix[x, y].GetComponent<MeshRenderer>().material.name}");
+                //Debug.Log($"(x, y)=({x}, {runY}) material={cubesMatrix[x, runY].GetComponent<MeshRenderer>().material.name}");
+
                 while (runY >= 0 &&
                       cubesMatrix[x, runY] != null &&
                       cubesMatrix[x, y].GetComponent<MeshRenderer>().material.name.Equals(cubesMatrix[x, runY].GetComponent<MeshRenderer>().material.name))
