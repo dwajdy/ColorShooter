@@ -36,6 +36,8 @@ public class Settings : MonoBehaviour
     private GunFire gunFire;
     private bool isDoneCreatingCubes = false;
     
+    private SoundEffectsManager soundEffectsManager;
+
     void Awake()
     {
         if (BoardWidth == 0 ||
@@ -44,8 +46,6 @@ public class Settings : MonoBehaviour
            RedCubesProbability == 0 ||
            PointsPerDestroyedCube == 0)
         {
-            //Debug.LogError("One of game settings variables equals 0. Please check settings.");
-
             #if UNITY_EDITOR
                         // does not work in the editor
                         // Application.Quit(); 
@@ -54,8 +54,6 @@ public class Settings : MonoBehaviour
                             //Application.Quit();
             #endif
         }
-
-        gameDynamics.Init(BoardWidth, BoardHeight);
 
         // initialize the materials
         foreach (Colors color in Enum.GetValues(typeof(Colors)))
@@ -75,21 +73,49 @@ public class Settings : MonoBehaviour
         float othersProbability = (1.0f - RedCubesProbability - WhiteCubesProbability) / 4;
         probabilites[Colors.Cyan] = probabilites[Colors.Yellow] = probabilites[Colors.Magenta] = probabilites[Colors.Black] = othersProbability;
 
-        gunFire = GameObject.FindGameObjectWithTag("GunHead").GetComponent<GunFire>();
+        soundEffectsManager = GameObject.FindGameObjectWithTag("SoundEffects").GetComponent<SoundEffectsManager>();
+
+        gameDynamics.Init(BoardWidth, BoardHeight, PointsPerDestroyedCube, soundEffectsManager);
     }
     
-    public void onClick()
+    public void onClickRestartButton()
     {
+        //gameDynamics.SetGameStartedFirstTime(false);
+
         if(isDoneCreatingCubes)
         {
             IEnumerator  coroutine = RestartGame();
             StartCoroutine(coroutine);
         }
     }
+
+    public void onClickStartButton()
+    {
+        
+        GameObject[] objectsToEnable = GameObject.FindGameObjectsWithTag("EnableOnStartGame");
+        foreach(GameObject obj in objectsToEnable)
+        {
+            obj.SetActive(true);
+        }
+
+        GameObject[] objectsToDisable = GameObject.FindGameObjectsWithTag("DisableOnStartGame");
+        foreach(GameObject obj in objectsToDisable)
+        {
+            obj.SetActive(false);
+        }
+
+        // parent of this game object is activated only in this function that's why we can't do this in awake()
+        gunFire = GameObject.FindGameObjectWithTag("GunHead").GetComponent<GunFire>();
+
+        IEnumerator  coroutine = RestartGame();
+        StartCoroutine(coroutine);
+        
+    }
     
     IEnumerator Start()
     {
-        return RestartGame();
+        yield return null;
+        //return RestartGame();
     }
 
     public IEnumerator RestartGame()
@@ -160,16 +186,15 @@ public class Settings : MonoBehaviour
         }
 
         isDoneCreatingCubes = true;
+        gameDynamics.SetGameStartedFirstTime(true);
     }
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("Entering Update");
         bool calculationDone = gameDynamics.Update();
 
         if (Input.GetMouseButtonDown(0) && calculationDone)
         {
-            Debug.Log("Entering mouse if.");
             
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -178,13 +203,12 @@ public class Settings : MonoBehaviour
             {
                    if(hit.transform.name == "Cube")
                    {
-                       Debug.Log("Hit a cube!");
+                       soundEffectsManager.PlayShooting();
                        hit.transform.gameObject.GetComponent<CubeBehavior>().Hit(gameDynamics, this);
                        Camera.main.GetComponent<Animator>().SetTrigger("IsCubeShot");
                        gunFire.StartFire(hit.transform.gameObject);
                    }
             }
-            Debug.Log("Ending mouse if.");
         }
     }
 

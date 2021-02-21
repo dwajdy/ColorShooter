@@ -8,6 +8,10 @@ public class GameDynamics
     private GameObject[,] cubesMatrix = null;
     private uint width;
     private uint height;
+
+    private uint scoreIncreaseValue;
+
+    private SoundEffectsManager soundEffectsManager;
     private bool removeOperationPerformed = false; // for optimization
 
     private bool gameIsReady = false;
@@ -15,10 +19,12 @@ public class GameDynamics
     private DateTime timeClick;
     private const int timeToWaitAfterRemove= 1000;
 
-    public void Init(uint width, uint height)
+    public void Init(uint width, uint height, uint scoreIncreaseValue, SoundEffectsManager soundEffectsManager)
     {
         this.width = width;
         this.height = height;
+        this.scoreIncreaseValue = scoreIncreaseValue;
+        this.soundEffectsManager = soundEffectsManager;
         cubesMatrix = new GameObject[width, height];
     }
 
@@ -29,6 +35,7 @@ public class GameDynamics
   
     private uint score = 0;
     private bool isGameOver = false;
+    private bool isGameStartedFirstTime = false;
 
     public void Replace(uint x, uint y, Material newMaterial, AnimationClip newAnimaion, string newBehaviorTypeName)
     {
@@ -47,6 +54,8 @@ public class GameDynamics
         var anim = cubesMatrix[x, y].GetComponent<Animator>();
         var animOverride = anim.runtimeAnimatorController as AnimatorOverrideController;
         animOverride["RedEmission"] = newAnimaion;
+
+        soundEffectsManager.PlayReplace();
     }
     
     public void Remove(uint x, uint y, bool increaseScore = false)
@@ -56,27 +65,31 @@ public class GameDynamics
             return;
         }
 
-        if(increaseScore && gameIsReady)
-        {
-            ++score;
-        }
-
         UnityEngine.Object.Destroy(cubesMatrix[x, y]);
         cubesMatrix[x, y] = null;
         removeOperationPerformed = true;
         timeClick = System.DateTime.Now;
-    }
+        
 
-    public void AddScore(uint addition)
-    {
-        score += addition;
+        if(increaseScore && gameIsReady)
+        {
+            score += scoreIncreaseValue;
+            soundEffectsManager.PlayScoreIncrease();
+        }
+        
+        if(! gameIsReady)
+        {
+            soundEffectsManager.PlayCollapse();
+        }
+
     }
 
     internal void Reset()
     {
         score = 0;
         isGameOver = false;
-
+        gameIsReady = false;
+        
         for (uint x = 0; x < cubesMatrix.GetLength(0); ++x)
         {
             for (int y = cubesMatrix.GetLength(1) - 1; y >= 0; y--)
@@ -93,15 +106,24 @@ public class GameDynamics
 
     public bool GetIsGameOver()
     {
-        return isGameOver;
+        return isGameOver && isGameStartedFirstTime;
+    }
+
+    public void SetGameStartedFirstTime(bool value)
+    {
+        isGameStartedFirstTime = value;
+    }
+
+    public bool IsGameStartedFirstTime()
+    {
+        return isGameStartedFirstTime;
     }
 
     public bool Update()
     {
-        Debug.Log("Entering Update");
 
         if( (System.DateTime.Now - timeClick).TotalMilliseconds < timeToWaitAfterRemove ||
-            isGameOver)
+            isGameOver || !isGameStartedFirstTime)
         {
             return false;
         }
@@ -178,7 +200,6 @@ public class GameDynamics
 
 
                 int runY = y - 1;
-                Debug.Log($"runY is:{runY} && runX is:{runX})");
                 while (runY >= 0 &&
                       cubesMatrix[x, runY] != null &&
                       cubesMatrix[x, y].GetComponent<MeshRenderer>().material.name.Equals(cubesMatrix[x, runY].GetComponent<MeshRenderer>().material.name))
@@ -199,7 +220,6 @@ public class GameDynamics
         }
 
         gameIsReady = true;
-        Debug.Log("Ending Update");
         return true;
     }
 

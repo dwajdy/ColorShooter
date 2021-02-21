@@ -13,10 +13,8 @@ public class GunMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 vetor3 = new Vector3(Input.mousePosition.x,Input.mousePosition.y,10);
-        Vector3 aimPos = Camera.main.ScreenToWorldPoint(vetor3);
-        aimPos.z = this.transform.position.z + 10;
+        Vector3 mousePosOnCubesWall = new Vector3(Input.mousePosition.x,Input.mousePosition.y, 10 - Camera.main.transform.position.z);
+        Vector3 aimPos = Camera.main.ScreenToWorldPoint(mousePosOnCubesWall);
         this.transform.LookAt(aimPos);
-        Debug.Log($"Aim position is: ({aimPos.x}, {aimPos.y}, {aimPos.z}).");
     }
 }

@@ -6,6 +6,9 @@ TagManager:
   tags:
   - RefCube
   - GunHead
+  - SoundEffects
+  - EnableOnStartGame
+  - DisableOnStartGame
   layers:
   - Default
   - TransparentFX
