@@ -1436,6 +1436,7 @@ MonoBehaviour:
   replaceColor: {fileID: 8300000, guid: 31392701d64dc5c4e919073151a01ca4, type: 3}
   collapse: {fileID: 8300000, guid: 87b6866d08575cc40aa3a089d32abb71, type: 3}
   scoreIncrease: {fileID: 8300000, guid: c7e6fb8e23c169e4d87c501e95e9e711, type: 3}
+  select: {fileID: 8300000, guid: f18d52811477c574295a29d0d11615da, type: 3}
 --- !u!1001 &940755510
 PrefabInstance:
   m_ObjectHideFlags: 0

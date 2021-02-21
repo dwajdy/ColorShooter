@@ -8,6 +8,8 @@ using Random = System.Random;
 
 public class Settings : MonoBehaviour
 {
+
+    [Header("Game Settings")]
     public uint BoardWidth = 0;
     public uint BoardHeight = 0;
     public float WhiteCubesProbability = 0;
@@ -37,6 +39,10 @@ public class Settings : MonoBehaviour
     private bool isDoneCreatingCubes = false;
     
     private SoundEffectsManager soundEffectsManager;
+
+    private GameObject[] objectToEnableAfterStartGame;
+
+    private GameObject[] objectToDisableAfterStartGame;
 
     void Awake()
     {
@@ -75,6 +81,16 @@ public class Settings : MonoBehaviour
 
         soundEffectsManager = GameObject.FindGameObjectWithTag("SoundEffects").GetComponent<SoundEffectsManager>();
 
+        gunFire = GameObject.FindGameObjectWithTag("GunHead").GetComponent<GunFire>();
+
+        objectToEnableAfterStartGame = GameObject.FindGameObjectsWithTag("EnableOnStartGame");
+        foreach(GameObject obj in objectToEnableAfterStartGame)
+        {
+            obj.SetActive(false);
+        }
+
+        objectToDisableAfterStartGame = GameObject.FindGameObjectsWithTag("DisableOnStartGame");
+
         gameDynamics.Init(BoardWidth, BoardHeight, PointsPerDestroyedCube, soundEffectsManager);
     }
     
@@ -84,6 +100,7 @@ public class Settings : MonoBehaviour
 
         if(isDoneCreatingCubes)
         {
+            soundEffectsManager.PlaySelect();
             IEnumerator  coroutine = RestartGame();
             StartCoroutine(coroutine);
         }
@@ -91,22 +108,17 @@ public class Settings : MonoBehaviour
 
     public void onClickStartButton()
     {
-        
-        GameObject[] objectsToEnable = GameObject.FindGameObjectsWithTag("EnableOnStartGame");
-        foreach(GameObject obj in objectsToEnable)
+        foreach(GameObject obj in objectToEnableAfterStartGame)
         {
             obj.SetActive(true);
         }
 
-        GameObject[] objectsToDisable = GameObject.FindGameObjectsWithTag("DisableOnStartGame");
-        foreach(GameObject obj in objectsToDisable)
+        foreach(GameObject obj in objectToDisableAfterStartGame)
         {
             obj.SetActive(false);
         }
 
-        // parent of this game object is activated only in this function that's why we can't do this in awake()
-        gunFire = GameObject.FindGameObjectWithTag("GunHead").GetComponent<GunFire>();
-
+        soundEffectsManager.PlaySelect();
         IEnumerator  coroutine = RestartGame();
         StartCoroutine(coroutine);
         

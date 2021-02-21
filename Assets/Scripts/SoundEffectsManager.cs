@@ -15,6 +15,8 @@ public class SoundEffectsManager : MonoBehaviour
 
     public AudioClip scoreIncrease;
 
+    public AudioClip select;
+
     private Queue<AudioClip> clipsToPlay = new Queue<AudioClip>();
 
     private AudioClip previousClip;
@@ -57,6 +59,11 @@ public class SoundEffectsManager : MonoBehaviour
     public void PlayReplace()
     {
         PlayNext(replaceColor);
+    }
+
+    public void PlaySelect()
+    {
+        PlayNext(select);
     }
 
     public void PlayNext(AudioClip clip)
