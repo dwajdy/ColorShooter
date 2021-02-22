@@ -38,6 +38,8 @@ public class GameDynamics
   
     private uint score = 0;
     private bool isGameOver = false;
+    private bool isNoCubesLeft = false;
+
     private bool isGameStartedFirstTime = false;
 
     public void Replace(uint x, uint y, Material newMaterial, AnimationClip newAnimaion, string newBehaviorTypeName)
@@ -97,7 +99,8 @@ public class GameDynamics
         score = 0;
         isGameOver = false;
         gameIsReady = false;
-        
+        isNoCubesLeft = false;
+
         for (uint x = 0; x < cubesMatrix.GetLength(0); ++x)
         {
             for (int y = cubesMatrix.GetLength(1) - 1; y >= 0; y--)
@@ -107,6 +110,10 @@ public class GameDynamics
         }
     }
 
+    public bool IsNoCubesLeft()
+    {
+        return isNoCubesLeft;
+    }
     public uint GetScore()
     {
         return score;
@@ -150,8 +157,8 @@ public class GameDynamics
         }
 
         // todo: update matrix by removing nulls and shifting cubes
-        bool isNoCubesLeft = true;
-
+        //bool isNoCubesLeft = true;
+        isNoCubesLeft = true; //until proven otherwise
         foreach(GameObject obj in cubesMatrix)
         {
             if(obj == null)
@@ -170,6 +177,7 @@ public class GameDynamics
 
         if(isNoCubesLeft)
         {
+            isNoCubesLeft = true;
             isGameOver = true;
             return true;
         }

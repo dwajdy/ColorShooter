@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class GameOverBehavior : MonoBehaviour
 {
+    public Text InfoText;
+
     GameDynamics gameDynamics;
 
     // Start is called before the first frame update
@@ -20,6 +22,7 @@ public class GameOverBehavior : MonoBehaviour
        if(gameDynamics.GetIsGameOver())
        {
            SetIsActiveOnChilds(true);
+           SetText(gameDynamics.IsNoCubesLeft());
        }
        else
        {
@@ -33,6 +36,18 @@ public class GameOverBehavior : MonoBehaviour
         for (int childIndex = 0; childIndex < numChilds; ++childIndex)
         {
             transform.GetChild(childIndex).gameObject.SetActive(value);
+        }
+    }
+
+    void SetText(bool isNoCubesLeft)
+    {
+        if(isNoCubesLeft)
+        {
+            InfoText.text = "GOOD GAME!";
+        }
+        else
+        {
+            InfoText.text = "GAME OVER!";
         }
     }
 }

@@ -10,7 +10,7 @@ public class EnergyScript : MonoBehaviour
     private uint maxEnergy = 6;
     private uint currEnergy = 6;
 
-    private float energyDecreaseTime = 2.0f;
+    private float energyDecreaseTime = 1.5f;
 
     private float timePassedFromLastDecrease = 0;
 

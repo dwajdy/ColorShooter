@@ -1370,7 +1370,7 @@ GameObject:
   - component: {fileID: 610815437}
   - component: {fileID: 610815438}
   m_Layer: 5
-  m_Name: GameOver
+  m_Name: EndGame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1409,6 +1409,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b837840e732f1443a8989dadacdf7ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  InfoText: {fileID: 1117568507}
 --- !u!1 &625326041
 GameObject:
   m_ObjectHideFlags: 0
@@ -1422,7 +1423,7 @@ GameObject:
   - component: {fileID: 625326044}
   - component: {fileID: 625326043}
   m_Layer: 5
-  m_Name: RestartButton
+  m_Name: EndGameButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2557,7 +2558,7 @@ GameObject:
   - component: {fileID: 1117568509}
   - component: {fileID: 1117568506}
   m_Layer: 5
-  m_Name: GameOverText
+  m_Name: EndGameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2905,8 +2906,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d28466eea77c770428df35542c20060c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BoardWidth: 10
-  BoardHeight: 7
+  BoardWidth: 13
+  BoardHeight: 10
   WhiteCubesProbability: 0.1
   RedCubesProbability: 0.05
   PointsPerDestroyedCube: 5
@@ -2926,7 +2927,7 @@ GameObject:
   - component: {fileID: 1315125913}
   - component: {fileID: 1315125912}
   m_Layer: 5
-  m_Name: RestartButtonText
+  m_Name: EndGameButtonText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2983,7 +2984,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: RESTART
+  m_Text: TRY AGAIN
 --- !u!222 &1315125911
 CanvasRenderer:
   m_ObjectHideFlags: 0

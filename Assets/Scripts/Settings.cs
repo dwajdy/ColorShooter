@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = System.Random;
@@ -186,12 +185,15 @@ public class Settings : MonoBehaviour
                         //newAnim.runtimeAnimatorController = new AnimatorOverrideController(controller);
 
                         Animator newAnim = newObj.AddComponent<Animator>();
-                        AnimatorOverrideController animatorOverrideController = new AnimatorOverrideController(Resources.Load("Animations/Emission", typeof(AnimatorController)) as AnimatorController);
-                        newAnim.runtimeAnimatorController = animatorOverrideController;
-                        animatorOverrideController["EmissionPlaceholder"] = animations[prob.Key];
-                        
-                        //clipOverrides = new AnimationClipOverrides(animatorOverrideController.overridesCount);
-                        
+                        RuntimeAnimatorController animatorOverrideController = Resources.Load("Animations/Emission") as RuntimeAnimatorController;
+                        AnimatorOverrideController animOverride = new AnimatorOverrideController(animatorOverrideController);
+
+                        var anims = new List<KeyValuePair<AnimationClip, AnimationClip>>();
+                        anims.Add(new KeyValuePair<AnimationClip, AnimationClip>(animatorOverrideController.animationClips[0], animations[prob.Key]));
+                        animOverride.ApplyOverrides(anims);
+
+                        newAnim.runtimeAnimatorController = animOverride;
+
                         if(specialPowers.ContainsKey(prob.Key))
                         {
                             cubeBehavior = newObj.AddComponent(Type.GetType(specialPowers[prob.Key])) as CubeBehavior;
