@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.Animations;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = System.Random;
 
 public class Settings : MonoBehaviour
@@ -17,7 +18,8 @@ public class Settings : MonoBehaviour
     public  uint PointsPerDestroyedCube = 0;
 
     [Header("Extras")]
-    public bool FirstPersonCameraEffect = true;
+    public bool FirstPersonCameraEffect = false;
+    public uint PointsPerShot = 0;
 
     // Start is called before the first frame update
     public enum Colors{
@@ -99,7 +101,7 @@ public class Settings : MonoBehaviour
 
         objectToDisableAfterStartGame = GameObject.FindGameObjectsWithTag("DisableOnStartGame");
 
-        gameDynamics.Init(BoardWidth, BoardHeight, PointsPerDestroyedCube, soundEffectsManager);
+        gameDynamics.Init(BoardWidth, BoardHeight, PointsPerDestroyedCube, PointsPerShot, soundEffectsManager);
     }
     
     public void onClickRestartButton()
@@ -130,6 +132,12 @@ public class Settings : MonoBehaviour
         IEnumerator  coroutine = RestartGame();
         StartCoroutine(coroutine);
         
+    }
+
+     public void onClickHowToPlay()
+    {
+        soundEffectsManager.PlaySelect();
+        SceneManager.LoadScene("HowToPlayScene");
     }
     
     IEnumerator Start()

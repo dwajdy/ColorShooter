@@ -11,6 +11,8 @@ public class GameDynamics
 
     private uint scoreIncreaseValue;
 
+    private uint scoreIncreaseValuePerShot;
+
     private SoundEffectsManager soundEffectsManager;
     private bool removeOperationPerformed = false; // for optimization
 
@@ -19,11 +21,12 @@ public class GameDynamics
     private DateTime timeClick;
     private const int timeToWaitAfterRemove= 1000;
 
-    public void Init(uint width, uint height, uint scoreIncreaseValue, SoundEffectsManager soundEffectsManager)
+    public void Init(uint width, uint height, uint scoreIncreaseValue,uint scoreIncreasePerShot, SoundEffectsManager soundEffectsManager)
     {
         this.width = width;
         this.height = height;
         this.scoreIncreaseValue = scoreIncreaseValue;
+        this.scoreIncreaseValuePerShot = scoreIncreasePerShot;
         this.soundEffectsManager = soundEffectsManager;
         cubesMatrix = new GameObject[width, height];
     }
@@ -70,14 +73,19 @@ public class GameDynamics
         removeOperationPerformed = true;
         timeClick = System.DateTime.Now;
         
-
-        if(increaseScore && gameIsReady)
+        if(gameIsReady)
         {
-            score += scoreIncreaseValue;
-            soundEffectsManager.PlayScoreIncrease();
+            if(increaseScore)
+            {
+                score += scoreIncreaseValue;
+                soundEffectsManager.PlayScoreIncrease();
+            }
+            else
+            {
+                score += scoreIncreaseValuePerShot;
+            }
         }
-        
-        if(! gameIsReady)
+        else // if(! gameIsReady)
         {
             soundEffectsManager.PlayCollapse();
         }
@@ -104,9 +112,22 @@ public class GameDynamics
         return score;
     }
 
+    public DateTime GetLastCubeHitTime()
+    {
+        return timeClick;
+    }
     public bool GetIsGameOver()
     {
         return isGameOver && isGameStartedFirstTime;
+    }
+
+    public bool IsGameReady()
+    {
+        return gameIsReady;
+    }
+    public void SetIsGameOver(bool value)
+    {
+        isGameOver = value;
     }
 
     public void SetGameStartedFirstTime(bool value)
