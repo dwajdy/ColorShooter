@@ -8,6 +8,12 @@ public class GameDynamics
     private GameObject[,] cubesMatrix = null;
     private uint width;
     private uint height;
+
+    private uint scoreIncreaseValue;
+
+    private uint scoreIncreaseValuePerShot;
+
+    private SoundEffectsManager soundEffectsManager;
     private bool removeOperationPerformed = false; // for optimization
 
     private bool gameIsReady = false;
@@ -15,10 +21,13 @@ public class GameDynamics
     private DateTime timeClick;
     private const int timeToWaitAfterRemove= 1000;
 
-    public void Init(uint width, uint height)
+    public void Init(uint width, uint height, uint scoreIncreaseValue,uint scoreIncreasePerShot, SoundEffectsManager soundEffectsManager)
     {
         this.width = width;
         this.height = height;
+        this.scoreIncreaseValue = scoreIncreaseValue;
+        this.scoreIncreaseValuePerShot = scoreIncreasePerShot;
+        this.soundEffectsManager = soundEffectsManager;
         cubesMatrix = new GameObject[width, height];
     }
 
@@ -29,8 +38,11 @@ public class GameDynamics
   
     private uint score = 0;
     private bool isGameOver = false;
+    private bool isNoCubesLeft = false;
 
-    public void Replace(uint x, uint y, Material newMaterial, string newBehaviorTypeName)
+    private bool isGameStartedFirstTime = false;
+
+    public void Replace(uint x, uint y, Material newMaterial, AnimationClip newAnimaion, string newBehaviorTypeName)
     {
         if(x < 0 || x >= width || y < 0 || y >= height || cubesMatrix[x, y] == null)
         {
@@ -43,6 +55,12 @@ public class GameDynamics
         // learning!!!!! Destory doesn't remove immediately. so what happended here is that when I called GetComponent<CubeBehavior> I was gettig the old one! hence, updating
         // x and y was performed on the old one, not the new added one!!!!!!!!!! that's why when I called UpdateCoords() on the AddComponent() it worked, because it's guaranteed
         // that it takes the new one. Note that there's another version of Destory called DestroyImmediate (see https://docs.unity3d.com/ScriptReference/Object.DestroyImmediate.html#:~:text=In%20game%20code%20you%20should,executed%20within%20the%20same%20frame).)
+    
+        var anim = cubesMatrix[x, y].GetComponent<Animator>();
+        var animOverride = anim.runtimeAnimatorController as AnimatorOverrideController;
+        animOverride["EmissionPlaceholder"] = newAnimaion;
+
+        soundEffectsManager.PlayReplace();
     }
     
     public void Remove(uint x, uint y, bool increaseScore = false)
@@ -52,26 +70,36 @@ public class GameDynamics
             return;
         }
 
-        if(increaseScore && gameIsReady)
-        {
-            ++score;
-        }
-
         UnityEngine.Object.Destroy(cubesMatrix[x, y]);
         cubesMatrix[x, y] = null;
         removeOperationPerformed = true;
         timeClick = System.DateTime.Now;
-    }
+        
+        if(gameIsReady)
+        {
+            if(increaseScore)
+            {
+                score += scoreIncreaseValue;
+                soundEffectsManager.PlayScoreIncrease();
+            }
+            else
+            {
+                score += scoreIncreaseValuePerShot;
+            }
+        }
+        else // if(! gameIsReady)
+        {
+            soundEffectsManager.PlayCollapse();
+        }
 
-    public void AddScore(uint addition)
-    {
-        score += addition;
     }
 
     internal void Reset()
     {
         score = 0;
         isGameOver = false;
+        gameIsReady = false;
+        isNoCubesLeft = false;
 
         for (uint x = 0; x < cubesMatrix.GetLength(0); ++x)
         {
@@ -82,29 +110,55 @@ public class GameDynamics
         }
     }
 
+    public bool IsNoCubesLeft()
+    {
+        return isNoCubesLeft;
+    }
     public uint GetScore()
     {
         return score;
     }
 
+    public DateTime GetLastCubeHitTime()
+    {
+        return timeClick;
+    }
     public bool GetIsGameOver()
     {
-        return isGameOver;
+        return isGameOver && isGameStartedFirstTime;
+    }
+
+    public bool IsGameReady()
+    {
+        return gameIsReady;
+    }
+    public void SetIsGameOver(bool value)
+    {
+        isGameOver = value;
+    }
+
+    public void SetGameStartedFirstTime(bool value)
+    {
+        isGameStartedFirstTime = value;
+    }
+
+    public bool IsGameStartedFirstTime()
+    {
+        return isGameStartedFirstTime;
     }
 
     public bool Update()
     {
-        Debug.Log("Entering Update");
 
         if( (System.DateTime.Now - timeClick).TotalMilliseconds < timeToWaitAfterRemove ||
-            isGameOver)
+            isGameOver || !isGameStartedFirstTime)
         {
             return false;
         }
 
         // todo: update matrix by removing nulls and shifting cubes
-        bool isNoCubesLeft = true;
-
+        //bool isNoCubesLeft = true;
+        isNoCubesLeft = true; //until proven otherwise
         foreach(GameObject obj in cubesMatrix)
         {
             if(obj == null)
@@ -123,6 +177,7 @@ public class GameDynamics
 
         if(isNoCubesLeft)
         {
+            isNoCubesLeft = true;
             isGameOver = true;
             return true;
         }
@@ -172,9 +227,11 @@ public class GameDynamics
                     return false;
                 }
 
-
+               
                 int runY = y - 1;
-                Debug.Log($"runY is:{runY} && runX is:{runX})");
+                Debug.Log($"(x, y)=({x}, {y}) material={cubesMatrix[x, y].GetComponent<MeshRenderer>().material.name}");
+                //Debug.Log($"(x, y)=({x}, {runY}) material={cubesMatrix[x, runY].GetComponent<MeshRenderer>().material.name}");
+
                 while (runY >= 0 &&
                       cubesMatrix[x, runY] != null &&
                       cubesMatrix[x, y].GetComponent<MeshRenderer>().material.name.Equals(cubesMatrix[x, runY].GetComponent<MeshRenderer>().material.name))
@@ -195,7 +252,6 @@ public class GameDynamics
         }
 
         gameIsReady = true;
-        Debug.Log("Ending Update");
         return true;
     }
 

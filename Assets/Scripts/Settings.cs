@@ -1,16 +1,24 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = System.Random;
 
 public class Settings : MonoBehaviour
 {
+
+    [Header("Basic Settings")]
     public uint BoardWidth = 0;
     public uint BoardHeight = 0;
     public float WhiteCubesProbability = 0;
     public float RedCubesProbability = 0;
     public  uint PointsPerDestroyedCube = 0;
+
+    [Header("Extras")]
+    public bool FirstPersonCameraEffect = false;
+    public uint PointsPerShot = 0;
 
     // Start is called before the first frame update
     public enum Colors{
@@ -25,12 +33,20 @@ public class Settings : MonoBehaviour
     private Colors[] basicColors = new Colors[] { Colors.Cyan, Colors.Yellow, Colors.Magenta, Colors.Black};
 
     private Dictionary<Colors, Material> materials = new Dictionary<Colors, Material>();
+    private Dictionary<Colors, AnimationClip> animations = new Dictionary<Colors, AnimationClip>();
     private Dictionary<Colors, float> probabilites = new Dictionary<Colors, float>();
     private Dictionary<Colors, string> specialPowers = new Dictionary<Colors, string>() {{Colors.Red, "RedBehavior"}, {Colors.White, "WhiteBehavior"}};
 
     private GameDynamics gameDynamics = new GameDynamics();
 
+    private GunFire gunFire;
     private bool isDoneCreatingCubes = false;
+    
+    private SoundEffectsManager soundEffectsManager;
+
+    private GameObject[] objectToEnableAfterStartGame;
+
+    private GameObject[] objectToDisableAfterStartGame;
 
     void Awake()
     {
@@ -40,8 +56,6 @@ public class Settings : MonoBehaviour
            RedCubesProbability == 0 ||
            PointsPerDestroyedCube == 0)
         {
-            //Debug.LogError("One of game settings variables equals 0. Please check settings.");
-
             #if UNITY_EDITOR
                         // does not work in the editor
                         // Application.Quit(); 
@@ -51,12 +65,21 @@ public class Settings : MonoBehaviour
             #endif
         }
 
-        gameDynamics.Init(BoardWidth, BoardHeight);
+        if(FirstPersonCameraEffect == false)
+        {
+            Camera.main.GetComponent<FirstPersonCameraMode>().enabled = false;
+        }
 
         // initialize the materials
         foreach (Colors color in Enum.GetValues(typeof(Colors)))
         {
             materials[color] = Resources.Load($"Materials/{color.ToString()}", typeof(Material)) as Material;
+        }
+
+        // initiaialize animations
+        foreach (Colors color in Enum.GetValues(typeof(Colors)))
+        {
+            animations[color] = Resources.Load($"Animations/{color.ToString()}Emission", typeof(AnimationClip)) as AnimationClip;
         }
 
         // set probabilites
@@ -65,21 +88,61 @@ public class Settings : MonoBehaviour
         float othersProbability = (1.0f - RedCubesProbability - WhiteCubesProbability) / 4;
         probabilites[Colors.Cyan] = probabilites[Colors.Yellow] = probabilites[Colors.Magenta] = probabilites[Colors.Black] = othersProbability;
 
-        // special powers
+        soundEffectsManager = GameObject.FindGameObjectWithTag("SoundEffects").GetComponent<SoundEffectsManager>();
+
+        gunFire = GameObject.FindGameObjectWithTag("GunHead").GetComponent<GunFire>();
+
+        objectToEnableAfterStartGame = GameObject.FindGameObjectsWithTag("EnableOnStartGame");
+        foreach(GameObject obj in objectToEnableAfterStartGame)
+        {
+            obj.SetActive(false);
+        }
+
+        objectToDisableAfterStartGame = GameObject.FindGameObjectsWithTag("DisableOnStartGame");
+
+        gameDynamics.Init(BoardWidth, BoardHeight, PointsPerDestroyedCube, PointsPerShot, soundEffectsManager);
     }
     
-    public void onClick()
+    public void onClickRestartButton()
     {
+        //gameDynamics.SetGameStartedFirstTime(false);
+
         if(isDoneCreatingCubes)
         {
+            soundEffectsManager.PlaySelect();
             IEnumerator  coroutine = RestartGame();
             StartCoroutine(coroutine);
         }
     }
+
+    public void onClickStartButton()
+    {
+        foreach(GameObject obj in objectToEnableAfterStartGame)
+        {
+            obj.SetActive(true);
+        }
+
+        foreach(GameObject obj in objectToDisableAfterStartGame)
+        {
+            obj.SetActive(false);
+        }
+
+        soundEffectsManager.PlaySelect();
+        IEnumerator  coroutine = RestartGame();
+        StartCoroutine(coroutine);
+        
+    }
+
+     public void onClickHowToPlay()
+    {
+        soundEffectsManager.PlaySelect();
+        SceneManager.LoadScene("HowToPlayScene");
+    }
     
     IEnumerator Start()
     {
-        return RestartGame();
+        yield return null;
+        //return RestartGame();
     }
 
     public IEnumerator RestartGame()
@@ -88,7 +151,6 @@ public class Settings : MonoBehaviour
 
         gameDynamics.Reset();
 
-        var camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         var height = 2*Camera.main.orthographicSize;
         var width = height*Camera.main.aspect;
 
@@ -115,6 +177,23 @@ public class Settings : MonoBehaviour
                         CubeBehavior cubeBehavior;
 
                         newObj.GetComponent<MeshRenderer>().material = materials[prob.Key];
+
+                        //AnimatorController controller = Resources.Load("Animations/Emission", typeof(AnimatorController)) as AnimatorController;
+                        //var state = controller.layers[0].stateMachine.states.FirstOrDefault(s => s.state.name.Equals("Emission")).state;
+                        //controller.SetStateEffectiveMotion(state, animations[prob.Key]);
+                        //Animator newAnim = newObj.AddComponent<Animator>();
+                        //newAnim.runtimeAnimatorController = new AnimatorOverrideController(controller);
+
+                        Animator newAnim = newObj.AddComponent<Animator>();
+                        RuntimeAnimatorController animatorOverrideController = Resources.Load("Animations/Emission") as RuntimeAnimatorController;
+                        AnimatorOverrideController animOverride = new AnimatorOverrideController(animatorOverrideController);
+
+                        var anims = new List<KeyValuePair<AnimationClip, AnimationClip>>();
+                        anims.Add(new KeyValuePair<AnimationClip, AnimationClip>(animatorOverrideController.animationClips[0], animations[prob.Key]));
+                        animOverride.ApplyOverrides(anims);
+
+                        newAnim.runtimeAnimatorController = animOverride;
+
                         if(specialPowers.ContainsKey(prob.Key))
                         {
                             cubeBehavior = newObj.AddComponent(Type.GetType(specialPowers[prob.Key])) as CubeBehavior;
@@ -137,16 +216,20 @@ public class Settings : MonoBehaviour
         }
 
         isDoneCreatingCubes = true;
+        gameDynamics.SetGameStartedFirstTime(true);
     }
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("Entering Update");
+        if(! isDoneCreatingCubes)
+        {
+            return;
+        }
+
         bool calculationDone = gameDynamics.Update();
 
         if (Input.GetMouseButtonDown(0) && calculationDone)
         {
-            Debug.Log("Entering mouse if.");
             
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -155,11 +238,12 @@ public class Settings : MonoBehaviour
             {
                    if(hit.transform.name == "Cube")
                    {
-                       Debug.Log("Hit a cube!");
+                       soundEffectsManager.PlayShooting();
                        hit.transform.gameObject.GetComponent<CubeBehavior>().Hit(gameDynamics, this);
+                       Camera.main.GetComponent<Animator>().SetTrigger("IsCubeShot");
+                       gunFire.StartFire(hit.transform.gameObject);
                    }
             }
-            Debug.Log("Ending mouse if.");
         }
     }
 
@@ -171,6 +255,11 @@ public class Settings : MonoBehaviour
     public Dictionary<Colors, Material> GetMaterials()
     {
         return materials;
+    }
+
+    public Dictionary<Colors, AnimationClip> GetAnimations()
+    {
+        return animations;
     }
 
     public GameDynamics GetGameDynamics()

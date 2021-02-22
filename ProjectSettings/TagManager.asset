@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - RefCube
+  - GunHead
+  - SoundEffects
+  - EnableOnStartGame
+  - DisableOnStartGame
   layers:
   - Default
   - TransparentFX

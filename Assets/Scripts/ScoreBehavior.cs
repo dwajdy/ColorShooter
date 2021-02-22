@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ScoreBehavior : MonoBehaviour
 {
     Text textComp;
-
+    uint previousScore = 0;
     GameDynamics gameDynamics;
 
     // Start is called before the first frame update
@@ -19,6 +19,13 @@ public class ScoreBehavior : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        textComp.text = "Score:" + gameDynamics.GetScore();
+        if(previousScore == gameDynamics.GetScore())
+        {
+            return;
+        }
+
+        GetComponent<Animator>().SetTrigger("IncreaseScore");
+        textComp.text = "SCORE: " + gameDynamics.GetScore();
+        previousScore = gameDynamics.GetScore();
     }
 }
