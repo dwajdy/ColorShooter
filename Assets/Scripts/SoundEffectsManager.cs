@@ -17,6 +17,8 @@ public class SoundEffectsManager : MonoBehaviour
 
     public AudioClip select;
 
+    public AudioClip start;
+
     private Queue<AudioClip> clipsToPlay = new Queue<AudioClip>();
 
     private AudioClip previousClip;
@@ -64,6 +66,11 @@ public class SoundEffectsManager : MonoBehaviour
     public void PlaySelect()
     {
         PlayNext(select);
+    }
+
+    public void PlayStart()
+    {
+        PlayNext(start);
     }
 
     public void PlayNext(AudioClip clip)

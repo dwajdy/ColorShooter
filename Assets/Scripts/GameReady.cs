@@ -6,7 +6,12 @@ using UnityEngine.UI;
 public class GameReady : MonoBehaviour
 {
     public GameObject gameManager;
+
+    public GameObject soundManager;
+
     private GameDynamics gameDynamics;
+
+    private SoundEffectsManager soundEffectsManager;
     private float secondPassed = 0.0f;
 
     private float secondsToUpdateText = 1.5f;
@@ -17,6 +22,7 @@ public class GameReady : MonoBehaviour
     void Start()
     {
         gameDynamics = gameManager.GetComponent<Settings>().GetGameDynamics();
+        soundEffectsManager = soundManager.GetComponent<SoundEffectsManager>();
         textComp = GetComponent<Text>();
     }
 
@@ -43,11 +49,12 @@ public class GameReady : MonoBehaviour
                 return;
             }
         }
-        else if(gameDynamics.IsGameReady())
+        else if(gameDynamics.IsGameReady() && (previousLastGameIsReady == false))
         {
             textComp.enabled = false;
             textComp.text = "WAIT..";
             previousLastGameIsReady = true;
+            soundEffectsManager.PlayStart();
         }
     }
 }

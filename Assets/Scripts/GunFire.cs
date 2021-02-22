@@ -12,7 +12,7 @@ public class GunFire : MonoBehaviour
     private const float shootingTime =0.3f;
     private float timeFromStartShooting = 0.0f;
 
-    private float lightZAxisOffset = 2.0f;
+    private float lightZAxisOffset = 1.0f;
     
     // Start is called before the first frame update
     void Start()
@@ -43,7 +43,9 @@ public class GunFire : MonoBehaviour
     {
         timeFromStartShooting = 0.0f;
         Vector3 lightStartingPos = transform.position;
+        
         lightStartingPos.z += lightZAxisOffset;
+
         fireLine.SetPosition(0, lightStartingPos);
         fireLine.SetPosition(1, objectToShoot.transform.position);
 
