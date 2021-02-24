@@ -3,26 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class responsible of the end-game UI elements. It shows the relevant texts and buttons based on win/lose situation.
+/// </summary>
 public class GameOverBehavior : MonoBehaviour
 {
     public Text InfoText;
 
-    CubesWallHandler gameDynamics;
+    private CubesWallHandler cubesWallHandler = null;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        gameDynamics = GameObject.Find("Game").GetComponent<GameManager>().GetGameDynamics();
-        //textComp = GetComponent<Text>();
+    void Start() {
+        cubesWallHandler = GameManager.Instance.GetCubesWallHandler();
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Updates score text UI element when score changes.
+    /// </summary>
     void LateUpdate()
     {
-       if(gameDynamics.GetIsGameOver())
+       if(GameManager.Instance.GetCubesWallHandler().GetIsGameOver())
        {
            SetIsActiveOnChilds(true);
-           SetText(gameDynamics.IsNoCubesLeft());
+           SetText(GameManager.Instance.GetCubesWallHandler().IsNoCubesLeft());
        }
        else
        {
@@ -30,6 +32,9 @@ public class GameOverBehavior : MonoBehaviour
        }
     }
 
+    /// <summary>
+    /// Setting active child nodes which include: status text and button.
+    /// </summary>
     void SetIsActiveOnChilds(bool value)
     {
         int numChilds = this.transform.childCount;
@@ -39,6 +44,9 @@ public class GameOverBehavior : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Sets the text based on win/lose condition. If player finished all cubes without losing, it updates text to "GOOD GAME!", and "GAME OVER!" otherwise.
+    /// </summary>
     void SetText(bool isNoCubesLeft)
     {
         if(isNoCubesLeft)

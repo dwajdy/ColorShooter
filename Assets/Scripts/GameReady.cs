@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class responsible of the wait UI element. It knows how to update the text, and remove it when game starts.
+/// </summary>
 public class GameReady : MonoBehaviour
 {
     public GameObject gameManager;
 
     public GameObject soundManager;
 
-    private CubesWallHandler gameDynamics;
+    private CubesWallHandler cubesWallHandler = null;
 
     private float secondPassed = 0.0f;
 
@@ -20,17 +23,17 @@ public class GameReady : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gameDynamics = gameManager.GetComponent<GameManager>().GetGameDynamics();
         textComp = GetComponent<Text>();
+        cubesWallHandler = GameManager.Instance.GetCubesWallHandler();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(! gameDynamics.IsGameReady() && (gameDynamics.IsGameStartedFirstTime() || previousLastGameIsReady == true))
+        if(! cubesWallHandler.IsGameReady() && (cubesWallHandler.GetIsGameStartedFirstTime() || previousLastGameIsReady == true))
         {
             textComp.enabled = true;
-            previousLastGameIsReady = gameDynamics.IsGameReady();
+            previousLastGameIsReady = cubesWallHandler.IsGameReady();
             secondPassed += Time.deltaTime;
             if(secondPassed > secondsToUpdateText)
             {   
@@ -47,7 +50,7 @@ public class GameReady : MonoBehaviour
                 return;
             }
         }
-        else if(gameDynamics.IsGameReady() && (previousLastGameIsReady == false))
+        else if(cubesWallHandler.IsGameReady() && (previousLastGameIsReady == false))
         {
             textComp.enabled = false;
             textComp.text = "WAIT..";

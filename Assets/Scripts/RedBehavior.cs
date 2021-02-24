@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This class represents the red cubes behaviour. It contains an override for the Hit() function to implement special powers.
+/// </summary>
 public class RedBehavior : CubeBehavior
 {
     public override void Hit(CubesWallHandler cubesWallHandler, CubeGenerator cubeGenerator) 

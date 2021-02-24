@@ -3,12 +3,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// [CubesWallHandler]
+///     This class is responsible to create the cubes wall, and keep them updated. It 
+///   implements the core game play rules (match-3) and expose public methods to
+///   allow removing and replacing cubes, to allow cubes communicate with it when hit.
+/// </summary>
 public class CubesWallHandler
 {
+    private CubeGenerator cubeGenerator = new CubeGenerator();
+
+
+
     private GameObject[,] cubesMatrix = null;
     private bool removeOperationPerformed = false; // for optimization
 
     private bool gameIsReady = false;
+
+    public bool IsDoneCreatingCubes {get; private set;} = false;
 
     private DateTime timeClick;
     private const int timeToWaitAfterRemove= 1000;
@@ -16,6 +28,7 @@ public class CubesWallHandler
     public void Initialize()
     {
         cubesMatrix = new GameObject[GameManager.Instance.BoardWidth, GameManager.Instance.BoardHeight];
+        cubeGenerator.Initialize();
     }
 
     public void Add(GameObject cube, uint x, uint y)
@@ -29,6 +42,11 @@ public class CubesWallHandler
 
     private bool isGameStartedFirstTime = false;
 
+    // todo: eliminate it but check what to do with GameReady
+    public bool GetIsGameStartedFirstTime()
+    {
+        return isGameStartedFirstTime;
+    }
     public void Replace(uint x, uint y, Material newMaterial, AnimationClip newAnimaion, string newBehaviorTypeName)
     {
         if(x < 0 || x >= GameManager.Instance.BoardWidth || y < 0 || y >= GameManager.Instance.BoardHeight || cubesMatrix[x, y] == null)
@@ -124,14 +142,33 @@ public class CubesWallHandler
         isGameOver = value;
     }
 
-    public void SetGameStartedFirstTime(bool value)
+    public IEnumerator CreateCubesWall()
     {
-        isGameStartedFirstTime = value;
+        IsDoneCreatingCubes = false;
+        Reset();
+
+        for(uint row = 0; row < GameManager.Instance.BoardHeight; ++row)
+        {
+            for(uint col = 0; col < GameManager.Instance.BoardWidth; ++col)
+            {
+                GameObject newCube = cubeGenerator.GenerateCube(col, row);
+                Add(newCube, col, row);
+                yield return new WaitForSeconds(0.01f);
+            }
+        }
+
+        IsDoneCreatingCubes = true;
+        isGameStartedFirstTime = true;
     }
 
-    public bool IsGameStartedFirstTime()
+    public bool IsCubeOnWallHit(GameObject objectHit)
     {
-        return isGameStartedFirstTime;
+        return objectHit.name == "CubeOnWall";
+    }
+
+    public void HandleCubeHit(GameObject objectHit)
+    {
+        objectHit.GetComponent<CubeBehavior>().Hit(this, cubeGenerator);
     }
 
     public bool Update()

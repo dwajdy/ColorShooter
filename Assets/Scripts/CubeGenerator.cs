@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This class is responsible for generating cubes. It contains all needed information and the methods
+/// for cubes creation. It creates ready-to-use cubes for that contains everything, such as components based on the color, animation, material and etc.
+/// </summary>
 public class CubeGenerator
 {
 

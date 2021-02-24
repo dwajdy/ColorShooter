@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class UIManager : MonoBehaviour
+/// <summary>
+///     This class holds all "onClick" functions for the in-game buttons in game scene (not including how-to-play scene).
+/// </summary>
+public class ButtonsOnClickScripts : MonoBehaviour
 {
 
     private GameObject[] objectToEnableAfterStartGame;
     private GameObject[] objectToDisableAfterStartGame;
-    private GunFire gunFire;
-
-    public void PlayFireVisualEffect(GameObject objectToShoot)
-    {
-        gunFire.StartFire(objectToShoot);
-    }
     
     public void onClickStartButton()
     {
@@ -49,13 +46,9 @@ public class UIManager : MonoBehaviour
         SceneManager.LoadScene("HowToPlayScene");
     }
 
-    // Start is called before the first frame update
-    void Awake()
+    // We do this at Start() and not Awake() because GameManager might create objects at Awake() we want to make sure we catch all of them.
+    void Start()
     {
-        // get gunFire to play animation on shooting.
-        GameObject gunHead = GameObject.FindGameObjectWithTag("GunHead");
-        gunFire = gunHead.GetComponent<GunFire>();
-
         // disable the UI elements that we need to show after clicking on starting game
         // note: in unity it's hard to get inactive objects in a proper way. So tag UI elements with special tag, and we set in-active.
         //       on OnClick function, we will enable those UI elements.
@@ -68,11 +61,5 @@ public class UIManager : MonoBehaviour
         // prepare them ahead. Will be disabled after user starts game.
         objectToDisableAfterStartGame = GameObject.FindGameObjectsWithTag("DisableOnStartGame");
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

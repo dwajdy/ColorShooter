@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class implements the behavior of the in-game energy bar.
+/// </summary>
 public class EnergyScript : MonoBehaviour
 {
 
@@ -14,25 +17,27 @@ public class EnergyScript : MonoBehaviour
 
     private float timePassedFromLastDecrease = 0;
 
-    CubesWallHandler gameDynamics;
-
     private DateTime lastCubeHitTime = DateTime.Now;
     
     private Text textComp;
+
+    private CubesWallHandler cubesWallHandler = null;
 
     // Start is called before the first frame update
     void Start()
     {
         textComp = GetComponent<Text>();
-        gameDynamics = GameObject.Find("Game").GetComponent<GameManager>().GetGameDynamics();
+        cubesWallHandler = GameManager.Instance.GetCubesWallHandler();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(gameDynamics.GetIsGameOver() || !gameDynamics.IsGameReady())
+        
+
+        if(cubesWallHandler.GetIsGameOver() || !cubesWallHandler.IsGameReady())
         {
-            lastCubeHitTime = gameDynamics.GetLastCubeHitTime();
+            lastCubeHitTime = cubesWallHandler.GetLastCubeHitTime();
             timePassedFromLastDecrease = 0.0f;
             currEnergy = maxEnergy;
             return;
@@ -43,7 +48,7 @@ public class EnergyScript : MonoBehaviour
             return;
         }
 
-        DateTime currCubeHitTime = gameDynamics.GetLastCubeHitTime();
+        DateTime currCubeHitTime = cubesWallHandler.GetLastCubeHitTime();
         if(currCubeHitTime != lastCubeHitTime &&
            currEnergy < maxEnergy)
         {
@@ -67,7 +72,7 @@ public class EnergyScript : MonoBehaviour
         
         if(0 == currEnergy)
         {
-            gameDynamics.SetIsGameOver(true);
+            cubesWallHandler.SetIsGameOver(true);
         }
         
     }

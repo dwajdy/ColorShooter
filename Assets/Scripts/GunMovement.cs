@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This class represents the gun movement. It makes gun follow user mouse pointer.
+/// </summary>
 public class GunMovement : MonoBehaviour
 {
     // Start is called before the first frame update

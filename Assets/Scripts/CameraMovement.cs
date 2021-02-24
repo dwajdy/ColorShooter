@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 
-public class FirstPersonCameraMode : MonoBehaviour
+/// <summary>
+///     This class holds all "onClick" functions for the in-game buttons.
+/// </summary>
+public class CameraMovement : MonoBehaviour
 {
     // Start is called before the first frame update
     private Quaternion _originalCamRotation;

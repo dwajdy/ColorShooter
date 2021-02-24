@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This is the base class for all cubes in game. It mainly exposes two public methods, one to update it's coords
+//  and the other implements "hit" operation on that cube. By that, each cube is independent in terms of what operations
+//  to do when it is hit. (please see also RedBehaviour and WhiteBehavior classes that inherit it).
+/// </summary>
 public class CubeBehavior : MonoBehaviour
 {
     protected uint x;

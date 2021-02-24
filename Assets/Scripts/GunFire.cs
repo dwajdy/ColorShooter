@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+///     This class is added as component to gun game object. It is responsible for 
+///   creating the shooting effect: lighting up gun head, and creating laser effect.
+/// </summary>
 public class GunFire : MonoBehaviour
 {
 
@@ -14,7 +18,6 @@ public class GunFire : MonoBehaviour
 
     private float lightZAxisOffset = 1.0f;
     
-    // Start is called before the first frame update
     void Start()
     {
         fireLight = this.GetComponent<Light>();

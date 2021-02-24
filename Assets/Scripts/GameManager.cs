@@ -6,6 +6,14 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = System.Random;
 
+/// <summary>
+/// [GameManager]
+///    This class handles main game play. It mainly does the following:
+///      - Reading configs and updating game accordingly
+///      - Creating cubes wall
+///      - Taking user input and calling update on relevent classes
+///      - Invoking gun animation
+/// </summary>
 public class GameManager : MonoBehaviour
 {
     // ################
@@ -32,22 +40,33 @@ public class GameManager : MonoBehaviour
     // ## Member Vars ##
     // #################
 
-    private CubeGenerator cubeGenerator = new CubeGenerator();
-    private bool isDoneCreatingCubes = false;
     private CubesWallHandler cubesWallHandler = new CubesWallHandler();
-    
-    private UIManager UIManager;
+    private GunHandler gunHandler = new GunHandler();
 
+    // #################
+    // ## Constants   ##
+    // #################
+
+    private const string INTRO_CUBES_PREFAB_NAME = "Prefabs/IntroCubes";
+    private const uint MAX_WIDTH = 20;
+    private const uint MAX_HEIGHT = 15;
+
+    // #################
+    // ## Methods     ##
+    // #################
 
     void Awake()
     {
         InitSingleton();
         ValidateConfig();
-        cubeGenerator.Initialize();
+        CreateIntro();
         cubesWallHandler.Initialize();
-        UIManager = GameObject.FindGameObjectWithTag("UI").GetComponent<UIManager>();
+        gunHandler.Initialize(); 
     }
     
+    /// <summary>
+    /// This function initializes the singleton instance pointer.
+    /// </summary>
     private void InitSingleton()
     {
         // ########################
@@ -62,6 +81,9 @@ public class GameManager : MonoBehaviour
         Instance = this;
     }
 
+    /// <summary>
+    /// Validates all game configs, and enable the "FPS camera" effect if needed.
+    /// </summary>
     private void ValidateConfig()
     {
         if (BoardWidth == 0 ||
@@ -73,74 +95,67 @@ public class GameManager : MonoBehaviour
             throw new Exception("Please check game config. Please check readme file for valid config options.");
         }
 
-        if(FirstPersonCameraEffect == false)
+        if(FirstPersonCameraEffect == true)
         {
-            Camera.main.GetComponent<FirstPersonCameraMode>().enabled = false;
+            Camera.main.gameObject.AddComponent<CameraMovement>();
         }
 
     }
     
 
+    /// <summary>
+    /// Calls CubeWallHandler to create cubes wall.
+    /// </summary>
     public IEnumerator CreateCubesWall()
     {
-        isDoneCreatingCubes = false;
-        cubesWallHandler.Reset();
-
-        for(uint row = 0; row < GameManager.Instance.BoardHeight; ++row)
-        {
-            for(uint col = 0; col < GameManager.Instance.BoardWidth; ++col)
-            {
-                GameObject newCube = cubeGenerator.GenerateCube(col, row);
-                cubesWallHandler.Add(newCube, col, row);
-                yield return new WaitForSeconds(0.01f);
-            }
-        }
-
-        isDoneCreatingCubes = true;
-        cubesWallHandler.SetGameStartedFirstTime(true);
+        return cubesWallHandler.CreateCubesWall();
     }
-    
-    public 
 
-    IEnumerator Start()
+    /// <summary>
+    /// Creates the game objects for the game-into animation (main screen). 
+    /// The intro composed of "red and white dancing cubes" and other falling cubes of basic colors.
+    /// </summary>    
+    public void CreateIntro()
     {
-        yield return null;
-        //return RestartGame();
+        // Since these are not going to change, I created a prefab for all of them. All what is left to do is to instantiate it.
+        GameObject introCubes = Resources.Load(INTRO_CUBES_PREFAB_NAME) as GameObject;
+        GameObject.Instantiate(introCubes, introCubes.transform.position, Quaternion.identity);
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Update() handles user input (mouses clicks) and calls the relevant methods to update cubes wall.
+    /// </summary> 
     void Update()
     {
-        if(! isDoneCreatingCubes)
+        if(! cubesWallHandler.IsDoneCreatingCubes)
         {
             return;
         }
 
         bool calculationDone = cubesWallHandler.Update();
-
         if (Input.GetMouseButtonDown(0) && calculationDone)
         {
-            
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
+            RaycastHit objectHit;
 
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out objectHit))
             {
-                   if(hit.transform.name == "CubeOnWall")
+                GameObject hitGameObject = objectHit.transform.gameObject;
+
+                   if(cubesWallHandler.IsCubeOnWallHit(hitGameObject))
                    {
-                       GameObject cubeGameObj = hit.transform.gameObject;
+                       cubesWallHandler.HandleCubeHit(hitGameObject);
+                       
+                       Camera.main.GetComponent<Animator>().SetTrigger("IsCubeShot");
 
                        AudioManager.Instance.PlayShooting();
-                       cubeGameObj.GetComponent<CubeBehavior>().Hit(cubesWallHandler, cubeGenerator);
-
-                       Camera.main.GetComponent<Animator>().SetTrigger("IsCubeShot");
-                       UIManager.PlayFireVisualEffect(cubeGameObj);
+                       gunHandler.StartFire(hitGameObject);
                    }
             }
         }
     }
 
-    public CubesWallHandler GetGameDynamics()
+    public CubesWallHandler GetCubesWallHandler()
     {
         return cubesWallHandler;
     }
