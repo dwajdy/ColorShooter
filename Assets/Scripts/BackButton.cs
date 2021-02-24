@@ -5,12 +5,10 @@ using UnityEngine.SceneManagement;
 
 public class BackButton : MonoBehaviour
 {
-    private SoundEffectsManager soundEffectsManager;
-
     // Start is called before the first frame update
     void Awake()
     {
-      soundEffectsManager = GameObject.FindGameObjectWithTag("SoundEffects").GetComponent<SoundEffectsManager>();  
+      
     }
 
     // Update is called once per frame
@@ -21,7 +19,7 @@ public class BackButton : MonoBehaviour
 
     public void onClickBack()
     {
-        soundEffectsManager.PlaySelect();
+        AudioManager.Instance.PlaySelect();
         SceneManager.LoadScene("GameScene");
     }
 }

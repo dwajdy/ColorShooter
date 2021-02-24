@@ -14,7 +14,7 @@ public class EnergyScript : MonoBehaviour
 
     private float timePassedFromLastDecrease = 0;
 
-    GameDynamics gameDynamics;
+    CubesWallHandler gameDynamics;
 
     private DateTime lastCubeHitTime = DateTime.Now;
     
@@ -24,7 +24,7 @@ public class EnergyScript : MonoBehaviour
     void Start()
     {
         textComp = GetComponent<Text>();
-        gameDynamics = GameObject.Find("Game").GetComponent<Settings>().GetGameDynamics();
+        gameDynamics = GameObject.Find("Game").GetComponent<GameManager>().GetGameDynamics();
     }
 
     // Update is called once per frame

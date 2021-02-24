@@ -9,6 +9,7 @@ TagManager:
   - SoundEffects
   - EnableOnStartGame
   - DisableOnStartGame
+  - UI
   layers:
   - Default
   - TransparentFX

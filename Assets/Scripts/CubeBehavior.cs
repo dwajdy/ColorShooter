@@ -24,8 +24,8 @@ public class CubeBehavior : MonoBehaviour
         this.x = x;
         this.y = y;
     }
-    virtual public void Hit(GameDynamics gameDynamics, Settings gameSettings)
+    virtual public void Hit(CubesWallHandler cubesWallHandler, CubeGenerator cubeGenerator)
     {
-        gameDynamics.Remove(x, y);
+        cubesWallHandler.Remove(x, y);
     }
 }

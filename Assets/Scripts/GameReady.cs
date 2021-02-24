@@ -9,9 +9,8 @@ public class GameReady : MonoBehaviour
 
     public GameObject soundManager;
 
-    private GameDynamics gameDynamics;
+    private CubesWallHandler gameDynamics;
 
-    private SoundEffectsManager soundEffectsManager;
     private float secondPassed = 0.0f;
 
     private float secondsToUpdateText = 1.5f;
@@ -21,8 +20,7 @@ public class GameReady : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gameDynamics = gameManager.GetComponent<Settings>().GetGameDynamics();
-        soundEffectsManager = soundManager.GetComponent<SoundEffectsManager>();
+        gameDynamics = gameManager.GetComponent<GameManager>().GetGameDynamics();
         textComp = GetComponent<Text>();
     }
 
@@ -54,7 +52,7 @@ public class GameReady : MonoBehaviour
             textComp.enabled = false;
             textComp.text = "WAIT..";
             previousLastGameIsReady = true;
-            soundEffectsManager.PlayStart();
+            AudioManager.Instance.PlayStart();
         }
     }
 }

@@ -7,12 +7,12 @@ public class GameOverBehavior : MonoBehaviour
 {
     public Text InfoText;
 
-    GameDynamics gameDynamics;
+    CubesWallHandler gameDynamics;
 
     // Start is called before the first frame update
     void Start()
     {
-        gameDynamics = GameObject.Find("Game").GetComponent<Settings>().GetGameDynamics();
+        gameDynamics = GameObject.Find("Game").GetComponent<GameManager>().GetGameDynamics();
         //textComp = GetComponent<Text>();
     }
 

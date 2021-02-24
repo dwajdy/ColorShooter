@@ -3,17 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameDynamics
+public class CubesWallHandler
 {
     private GameObject[,] cubesMatrix = null;
-    private uint width;
-    private uint height;
-
-    private uint scoreIncreaseValue;
-
-    private uint scoreIncreaseValuePerShot;
-
-    private SoundEffectsManager soundEffectsManager;
     private bool removeOperationPerformed = false; // for optimization
 
     private bool gameIsReady = false;
@@ -21,14 +13,9 @@ public class GameDynamics
     private DateTime timeClick;
     private const int timeToWaitAfterRemove= 1000;
 
-    public void Init(uint width, uint height, uint scoreIncreaseValue,uint scoreIncreasePerShot, SoundEffectsManager soundEffectsManager)
+    public void Initialize()
     {
-        this.width = width;
-        this.height = height;
-        this.scoreIncreaseValue = scoreIncreaseValue;
-        this.scoreIncreaseValuePerShot = scoreIncreasePerShot;
-        this.soundEffectsManager = soundEffectsManager;
-        cubesMatrix = new GameObject[width, height];
+        cubesMatrix = new GameObject[GameManager.Instance.BoardWidth, GameManager.Instance.BoardHeight];
     }
 
     public void Add(GameObject cube, uint x, uint y)
@@ -44,7 +31,7 @@ public class GameDynamics
 
     public void Replace(uint x, uint y, Material newMaterial, AnimationClip newAnimaion, string newBehaviorTypeName)
     {
-        if(x < 0 || x >= width || y < 0 || y >= height || cubesMatrix[x, y] == null)
+        if(x < 0 || x >= GameManager.Instance.BoardWidth || y < 0 || y >= GameManager.Instance.BoardHeight || cubesMatrix[x, y] == null)
         {
             return;
         }
@@ -60,12 +47,12 @@ public class GameDynamics
         var animOverride = anim.runtimeAnimatorController as AnimatorOverrideController;
         animOverride["EmissionPlaceholder"] = newAnimaion;
 
-        soundEffectsManager.PlayReplace();
+        AudioManager.Instance.PlayReplace();
     }
     
     public void Remove(uint x, uint y, bool increaseScore = false)
     {
-        if(x < 0 || x >= width || y < 0 || y >= height || cubesMatrix[x, y] == null)
+        if(x < 0 || x >= GameManager.Instance.BoardWidth || y < 0 || y >= GameManager.Instance.BoardHeight || cubesMatrix[x, y] == null)
         {
             return;
         }
@@ -79,17 +66,17 @@ public class GameDynamics
         {
             if(increaseScore)
             {
-                score += scoreIncreaseValue;
-                soundEffectsManager.PlayScoreIncrease();
+                score += GameManager.Instance.PointsPerDestroyedCube;
+                AudioManager.Instance.PlayScoreIncrease();
             }
             else
             {
-                score += scoreIncreaseValuePerShot;
+                score += GameManager.Instance.PointsPerShot;
             }
         }
         else // if(! gameIsReady)
         {
-            soundEffectsManager.PlayCollapse();
+            AudioManager.Instance.PlayCollapse();
         }
 
     }
@@ -200,7 +187,7 @@ public class GameDynamics
         }
 
         // look for 3 in a row or col
-        for (int x = 0; x < width; ++x)
+        for (int x = 0; x < GameManager.Instance.BoardWidth; ++x)
         {
             for (int y = cubesMatrix.GetLength(1) - 1; y >= 0; --y)
             {
@@ -210,7 +197,7 @@ public class GameDynamics
                 }
 
                 int runX = x + 1;
-                while (runX < width &&
+                while (runX < GameManager.Instance.BoardWidth &&
                       cubesMatrix[runX, y] != null &&
                       cubesMatrix[x, y].GetComponent<MeshRenderer>().material.name.Equals(cubesMatrix[runX, y].GetComponent<MeshRenderer>().material.name))
                 {
@@ -257,12 +244,12 @@ public class GameDynamics
 
     private void ShiftDownCubes(uint column, uint startingRow)
     {
-        if( startingRow >= height)
+        if( startingRow >= GameManager.Instance.BoardHeight)
         {
             return;
         }
 
-        for(uint y = startingRow; y < height; ++y)
+        for(uint y = startingRow; y < GameManager.Instance.BoardHeight; ++y)
         {
             cubesMatrix[column, y-1] = cubesMatrix[column, y];
 

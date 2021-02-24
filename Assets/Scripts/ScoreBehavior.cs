@@ -7,13 +7,13 @@ public class ScoreBehavior : MonoBehaviour
 {
     Text textComp;
     uint previousScore = 0;
-    GameDynamics gameDynamics;
+    CubesWallHandler gameDynamics;
 
     // Start is called before the first frame update
     void Start()
     {
         textComp = GetComponent<Text>();
-        gameDynamics = GameObject.Find("Game").GetComponent<Settings>().GetGameDynamics();
+        gameDynamics = GameObject.Find("Game").GetComponent<GameManager>().GetGameDynamics();
     }
 
     // Update is called once per frame
