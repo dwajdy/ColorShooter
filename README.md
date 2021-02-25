@@ -65,8 +65,10 @@ Points table:
   - Extras: FPS-camera + Points for shooting cube
 - Dedicated 'how-to-play' scene with gameplay video
 - Special colorful cubes glowing animations
+- Spectacular colorful light effect on cubes wall upon shooting (Light is in the same color of the destroyed cube)
 - Sound effects to enrich game play experience
 - Special gun following mouse movement
+- Gun laster effect, pointing towards the shooting direction on cubes wall.
 - Extra mode to enable FPS-like camera
 
 ## Known Issue
