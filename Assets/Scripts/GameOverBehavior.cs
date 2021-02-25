@@ -21,10 +21,10 @@ public class GameOverBehavior : MonoBehaviour
     /// </summary>
     void LateUpdate()
     {
-       if(GameManager.Instance.GetCubesWallHandler().GetIsGameOver())
+       if(GameManager.Instance.GetCubesWallHandler().IsGameOver)
        {
            SetIsActiveOnChilds(true);
-           SetText(GameManager.Instance.GetCubesWallHandler().IsNoCubesLeft());
+           SetText(GameManager.Instance.GetCubesWallHandler().IsNoCubesLeft);
        }
        else
        {

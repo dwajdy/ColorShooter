@@ -9,26 +9,34 @@ using UnityEngine;
 /// </summary>
 public class CubeBehavior : MonoBehaviour
 {
+    // ###############
+    // ## Protected ##
+    // ###############
+    // NOTE: in this class we define x and y as protected to allow 
+    //       classes that inherit this class, to acces them.
+
     protected uint x;
     protected uint y;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    // ###############
+    // ## Methods   ##
+    // ###############
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    /// <summary>
+    /// Updates the x and y coords of a cube.
+    //  Please note that x and y doesn't represent in-game scene coords, they are the indexes on the cubes walls caluclation matrix.
+    /// </summary>
     public void UpdateCoords(uint x, uint y)
     {
         this.x = x;
         this.y = y;
     }
+
+    /// <summary>
+    /// Represents the action to take once a cube is shot.
+    /// For basic cubes, the default behaviour is to remove the cube. 
+    /// Other classes might override this behaviour such as red and white cubes.
+    /// </summary>
     virtual public void Hit(CubesWallHandler cubesWallHandler, CubeGenerator cubeGenerator)
     {
         cubesWallHandler.Remove(x, y);

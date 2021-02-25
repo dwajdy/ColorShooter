@@ -8,21 +8,12 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class BackButton : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Awake()
-    {
-      
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    /// <summary>
+    /// Plays 'select' sound effect and returns to main screen scene.
+    /// </summary>
     public void onClickBack()
     {
-        AudioManager.Instance.PlaySelect();
+        AudioManager.Instance.PlayEffect(AudioManager.SoundEffect.SELECT);
         SceneManager.LoadScene("GameScene");
     }
 }

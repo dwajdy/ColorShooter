@@ -95,11 +95,6 @@ public class GameManager : MonoBehaviour
             throw new Exception("Please check game config. Please check readme file for valid config options.");
         }
 
-        if(FirstPersonCameraEffect == true)
-        {
-            Camera.main.gameObject.AddComponent<CameraMovement>();
-        }
-
     }
     
 
@@ -123,7 +118,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Update() handles user input (mouses clicks) and calls the relevant methods to update cubes wall.
+    /// Handles user input (mouses clicks) and calls the relevant methods to update cubes wall.
     /// </summary> 
     void Update()
     {
@@ -148,13 +143,17 @@ public class GameManager : MonoBehaviour
                        
                        Camera.main.GetComponent<Animator>().SetTrigger("IsCubeShot");
 
-                       AudioManager.Instance.PlayShooting();
+                       AudioManager.Instance.PlayEffect(AudioManager.SoundEffect.SHOOT);
                        gunHandler.StartFire(hitGameObject);
                    }
             }
         }
     }
 
+    /// <summary>
+    /// Returns the CubesWallHadler. Used by several UI elements to read flags to know how they update themselves.
+    /// I chose to let them pass through the GameManager and not directly to the CubesWallHandler in order not to create extra dependencies.
+    /// </summary> 
     public CubesWallHandler GetCubesWallHandler()
     {
         return cubesWallHandler;

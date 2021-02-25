@@ -33,11 +33,10 @@ public class EnergyScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
 
-        if(cubesWallHandler.GetIsGameOver() || !cubesWallHandler.IsGameReady())
+        if(cubesWallHandler.IsGameOver || !cubesWallHandler.IsGameReady)
         {
-            lastCubeHitTime = cubesWallHandler.GetLastCubeHitTime();
+            lastCubeHitTime = cubesWallHandler.TimeOfPreviousClick;
             timePassedFromLastDecrease = 0.0f;
             currEnergy = maxEnergy;
             return;
@@ -48,7 +47,7 @@ public class EnergyScript : MonoBehaviour
             return;
         }
 
-        DateTime currCubeHitTime = cubesWallHandler.GetLastCubeHitTime();
+        DateTime currCubeHitTime = cubesWallHandler.TimeOfPreviousClick;
         if(currCubeHitTime != lastCubeHitTime &&
            currEnergy < maxEnergy)
         {
@@ -72,7 +71,7 @@ public class EnergyScript : MonoBehaviour
         
         if(0 == currEnergy)
         {
-            cubesWallHandler.SetIsGameOver(true);
+            cubesWallHandler.IsGameOver = true;
         }
         
     }

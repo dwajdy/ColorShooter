@@ -22,13 +22,13 @@ public class ScoreBehavior : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        if(previousScore == cubesWallHandler.GetScore())
+        if(previousScore == cubesWallHandler.Score)
         {
             return;
         }
 
         GetComponent<Animator>().SetTrigger("IncreaseScore");
-        textComp.text = "SCORE: " + cubesWallHandler.GetScore();
-        previousScore = cubesWallHandler.GetScore();
+        textComp.text = "SCORE: " + cubesWallHandler.Score;
+        previousScore = cubesWallHandler.Score;
     }
 }

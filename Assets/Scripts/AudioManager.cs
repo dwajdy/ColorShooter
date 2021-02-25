@@ -28,6 +28,8 @@ public class AudioManager : MonoBehaviour
     // ## Unity Script Parameters ##
     // #############################
 
+    // Each type of sound effect has a dedicated variable so it can be easily visible in editor, and easy to replace
+    // For bigger projects, this should not be like this, but for this project I found it to be more convenient and straight forward.
     public AudioClip background;
 
     public AudioClip shooting;
@@ -42,28 +44,67 @@ public class AudioManager : MonoBehaviour
 
     public AudioClip start;
 
+    // ########################
+    // ## Sound Effects Enum ##
+    // ########################
     
+    // This is used when other classes request to play effect from the AudioManager. 
+    // See PlayEffect(...) below.
+    public enum SoundEffect{
+        SHOOT,
+        REPLACE,
+        COLLAPSE,
+        SCORE,
+        SELECT,
+        START,
+    }
+
     // ##############
     // ## Privates ##
     // ##############
+    
+    // audio source for playing background music.
     private AudioSource backgroundAudioSource;
+
+    // audio source for playing sound effects
     private AudioSource effectAudioSource;
+
+    // this variable will hold previously played clip.
+    // we use it to make sure we don't play two consequent effects in small time fraction.
     private AudioClip previousClip;
+
+    // this queue holds sound effects to play next.
+    // the use of it is for not losing sounds when need to be played.
     private Queue<AudioClip> clipsToPlay = new Queue<AudioClip>();
 
+    // ###############
+    // ## Constants ##
+    // ###############
+    private const uint MAX_NUM_SOUND_EFFECTS_WAITING = 2;
 
     void Awake()
     {
         InitSingleton();
-        
+        SetupMusicSource();
+        SetupEffectsSource();
+
+        // to keep music playing when moving between scenes.
+        DontDestroyOnLoad(this);
+    }
+
+    private void SetupMusicSource()
+    {
+        // Initilized and start playing background music (looping).
         backgroundAudioSource = gameObject.AddComponent<AudioSource>();
         backgroundAudioSource.loop = true;
         backgroundAudioSource.clip = background;
         backgroundAudioSource.Play();
+    }
 
+    private void SetupEffectsSource()
+    {
+        // Initilized effects audio source.
         effectAudioSource = gameObject.AddComponent<AudioSource>();
-
-        DontDestroyOnLoad(this);
     }
 
     private void InitSingleton()
@@ -80,7 +121,7 @@ public class AudioManager : MonoBehaviour
         Instance = this;
     }
     
-    // Update is called once per frame
+    /// Update will make sure audio manager playing the next effect on queue.
     void Update()
     {
         if(clipsToPlay.Count > 0 && !effectAudioSource.isPlaying)
@@ -95,48 +136,48 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlayBackground()
-    {
-        backgroundAudioSource.Play();
-    }
-
-    public void PlayShooting()
-    {
-        PlayNext(shooting);
-    }
-
-    public void PlayCollapse()
-    {
-        PlayNext(collapse);
-    }
-
-    public void PlayScoreIncrease()
-    {
-        PlayNext(scoreIncrease);
-    }
-
-    public void PlayReplace()
-    {
-        PlayNext(replaceColor);
-    }
-
-    public void PlaySelect()
-    {
-        PlayNext(select);
-    }
-
-    public void PlayStart()
-    {
-        PlayNext(start);
-    }
-
+    /// <summary>
+    /// This function will handle a request to play a sound effect. If playing queue is full, sound clip will be not be played at all.
+    /// </summary>
     public void PlayNext(AudioClip clip)
     {
-        if(clipsToPlay.Count == 2 || previousClip == clip)
+        if(clipsToPlay.Count == MAX_NUM_SOUND_EFFECTS_WAITING || previousClip == clip)
         {
             return;
         }
         clipsToPlay.Enqueue(clip);
         previousClip = clip;
     }
+
+    /// <summary>
+    /// Request for playing a sound effect. No guarantee that it's going to be played, It's based on queue size at the moment of the request.
+    /// </summary>
+    public void PlayEffect(SoundEffect effect)
+    {
+        AudioClip clip = null;
+        switch(effect)
+        {
+            case SoundEffect.SHOOT: 
+                clip = shooting;
+                break;
+            case SoundEffect.REPLACE: 
+                clip = replaceColor;
+                break;
+            case SoundEffect.COLLAPSE: 
+                clip = collapse;
+                break;
+            case SoundEffect.SCORE: 
+                clip = scoreIncrease;
+                break;
+            case SoundEffect.SELECT: 
+                clip = select;
+                break;
+            case SoundEffect.START: 
+                clip = start;
+                break;
+        }
+
+        PlayNext(clip);
+    }
+    
 }

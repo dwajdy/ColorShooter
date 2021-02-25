@@ -1,33 +1,46 @@
 ﻿using UnityEngine;
 
 /// <summary>
-///     This class holds all "onClick" functions for the in-game buttons.
+///     This class holds camera movement for the "FPS camera effect".
 /// </summary>
 public class CameraMovement : MonoBehaviour
 {
-    // Start is called before the first frame update
+    // ##############
+    // ## Privates ##
+    // ##############
     private Quaternion _originalCamRotation;
 
+    // ###############
+    // ## Constants ##
+    // ###############
+    private const float MOVEMENT_MULTIPLIER = 40.0f;
+
+    // ###############
+    // ## Methods   ##
+    // ###############
+
+    // for our project, we don't care about current camera rotation, we start from Quaternion.identity (no rotation state).
     void Awake()
     {
-        _originalCamRotation = Camera.main.transform.localRotation;
+        _originalCamRotation = Quaternion.identity;
     }
 
-    // Update is called once per frame
+    /// Will move the camera based on mouse movement.
     void Update()
     {
          // Rotate view right/left
-        var lookX = Input.GetAxis("Mouse X") * Time.deltaTime * 40;
+        var lookX = Input.GetAxis("Mouse X") * Time.deltaTime * MOVEMENT_MULTIPLIER;
         transform.Rotate(0, lookX, 0);
         
         // Rotate view up/down
-        var lookY = Input.GetAxis("Mouse Y") * Time.deltaTime * 40;
+        var lookY = Input.GetAxis("Mouse Y") * Time.deltaTime * MOVEMENT_MULTIPLIER;
         var newRotation = Camera.main.transform.localRotation * Quaternion.AngleAxis(-lookY, Vector3.right);
-        if (Mathf.Abs(Quaternion.Angle(_originalCamRotation, newRotation)) < 10.0f)
+
+        //constraint movement to prevent excessive rotations.
+        if (Mathf.Abs(Quaternion.Angle(_originalCamRotation, newRotation)) < 10.0f) 
         {
             Camera.main.transform.Rotate(-lookY, 0, 0);
         }
-
 
     }
 }

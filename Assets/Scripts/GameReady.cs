@@ -30,10 +30,10 @@ public class GameReady : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(! cubesWallHandler.IsGameReady() && (cubesWallHandler.GetIsGameStartedFirstTime() || previousLastGameIsReady == true))
+        if(! cubesWallHandler.IsGameReady && (cubesWallHandler.IsGameStartedFirstTime || previousLastGameIsReady == true))
         {
             textComp.enabled = true;
-            previousLastGameIsReady = cubesWallHandler.IsGameReady();
+            previousLastGameIsReady = cubesWallHandler.IsGameReady;
             secondPassed += Time.deltaTime;
             if(secondPassed > secondsToUpdateText)
             {   
@@ -50,12 +50,12 @@ public class GameReady : MonoBehaviour
                 return;
             }
         }
-        else if(cubesWallHandler.IsGameReady() && (previousLastGameIsReady == false))
+        else if(cubesWallHandler.IsGameReady && (previousLastGameIsReady == false))
         {
             textComp.enabled = false;
             textComp.text = "WAIT..";
             previousLastGameIsReady = true;
-            AudioManager.Instance.PlayStart();
+            AudioManager.Instance.PlayEffect(AudioManager.SoundEffect.START);
         }
     }
 }
