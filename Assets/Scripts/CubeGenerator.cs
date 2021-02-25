@@ -95,10 +95,10 @@ public class CubeGenerator
         // initialize probabilities //
         //////////////////////////////
 
-        probabilites[Colors.Red] = GameManager.Instance.RedCubesProbability;
-        probabilites[Colors.White] = GameManager.Instance.WhiteCubesProbability;
+        probabilites[Colors.Red] = GameManager.Instance.GameConfigs.RedCubesProbability;
+        probabilites[Colors.White] = GameManager.Instance.GameConfigs.WhiteCubesProbability;
 
-        float basicColorProabilityForEach = (1.0f - GameManager.Instance.RedCubesProbability - GameManager.Instance.WhiteCubesProbability) / 4;
+        float basicColorProabilityForEach = (1.0f - GameManager.Instance.GameConfigs.RedCubesProbability - GameManager.Instance.GameConfigs.WhiteCubesProbability) / 4;
         probabilites[Colors.Cyan] = probabilites[Colors.Yellow] = probabilites[Colors.Magenta] = probabilites[Colors.Black] = basicColorProabilityForEach;
 
         // loads emission animation controller since it's going to be used many  times.
@@ -119,7 +119,7 @@ public class CubeGenerator
 
         // calculating the starting X coord position.
         // Note: (wall_width/2)*(-1) should give us the starting X coord, that will make the wall be on screen center when creating all cubes.
-        var startingX = (-1.0f)*(GameManager.Instance.BoardWidth)/2;
+        var startingX = (-1.0f)*(GameManager.Instance.GameConfigs.BoardWidth)/2;
 
         // load prefab cube.
         GameObject cubePrefab = Resources.Load(CUBE_PREFAB_PATH) as GameObject;

@@ -50,7 +50,7 @@ public class ButtonsOnClickScripts : MonoBehaviour
 
         AudioManager.Instance.PlayEffect(AudioManager.SoundEffect.SELECT);
 
-        if(GameManager.Instance.FirstPersonCameraEffect)
+        if(GameManager.Instance.GameConfigs.FirstPersonCameraEffect)
         {
             // No need to store it, we just add it and forget about it :) . No further use of it.
             Camera.main.gameObject.AddComponent<CameraMovement>();

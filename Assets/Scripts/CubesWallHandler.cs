@@ -51,7 +51,7 @@ public class CubesWallHandler
     /// </summary>
     public void Initialize()
     {
-        cubesMatrix = new GameObject[GameManager.Instance.BoardWidth, GameManager.Instance.BoardHeight];
+        cubesMatrix = new GameObject[GameManager.Instance.GameConfigs.BoardWidth, GameManager.Instance.GameConfigs.BoardHeight];
         cubeGenerator.Initialize();
     }
 
@@ -61,7 +61,7 @@ public class CubesWallHandler
     /// </summary>
     public void Replace(uint x, uint y, Material newMaterial, AnimationClip newAnimaion, string newBehaviorTypeName)
     {
-        if(x < 0 || x >= GameManager.Instance.BoardWidth || y < 0 || y >= GameManager.Instance.BoardHeight || cubesMatrix[x, y] == null)
+        if(x < 0 || x >= GameManager.Instance.GameConfigs.BoardWidth || y < 0 || y >= GameManager.Instance.GameConfigs.BoardHeight || cubesMatrix[x, y] == null)
         {
             return;
         }
@@ -86,7 +86,7 @@ public class CubesWallHandler
     /// </summary>
     public void Remove(uint x, uint y, bool increaseScore = false)
     {
-        if(x < 0 || x >= GameManager.Instance.BoardWidth || y < 0 || y >= GameManager.Instance.BoardHeight || cubesMatrix[x, y] == null)
+        if(x < 0 || x >= GameManager.Instance.GameConfigs.BoardWidth || y < 0 || y >= GameManager.Instance.GameConfigs.BoardHeight || cubesMatrix[x, y] == null)
         {
             return;
         }
@@ -100,12 +100,12 @@ public class CubesWallHandler
         {
             if(increaseScore)
             {
-                Score += GameManager.Instance.PointsPerDestroyedCube;
+                Score += GameManager.Instance.GameConfigs.PointsPerDestroyedCube;
                 AudioManager.Instance.PlayEffect(AudioManager.SoundEffect.SCORE);
             }
             else
             {
-                Score += GameManager.Instance.PointsPerShot;
+                Score += GameManager.Instance.GameConfigs.PointsPerShot;
             }
         }
         else // if(! IsGameReady)
@@ -127,9 +127,9 @@ public class CubesWallHandler
         IsDoneCreatingCubes = false; // this is checked by GameManager Update() function. when false, Update() skips.
 
         // simply iterate over width and height indexes and create cubes using CubeGenerator.
-        for(uint row = 0; row < GameManager.Instance.BoardHeight; ++row)
+        for(uint row = 0; row < GameManager.Instance.GameConfigs.BoardHeight; ++row)
         {
-            for(uint col = 0; col < GameManager.Instance.BoardWidth; ++col)
+            for(uint col = 0; col < GameManager.Instance.GameConfigs.BoardWidth; ++col)
             {
                 GameObject newCube = cubeGenerator.GenerateCube(col, row);
                 this.cubesMatrix[col,row] = newCube;
@@ -213,7 +213,7 @@ public class CubesWallHandler
     private bool LookForMatch()
     {
         // look for 3 in a row or col
-        for (int x = 0; x < GameManager.Instance.BoardWidth; ++x)
+        for (int x = 0; x < GameManager.Instance.GameConfigs.BoardWidth; ++x)
         {
             for (int y = cubesMatrix.GetLength(1) - 1; y >= 0; --y)
             {
@@ -227,7 +227,7 @@ public class CubesWallHandler
                 //--------------------------
 
                 int runX = x + 1;
-                while (runX < GameManager.Instance.BoardWidth &&
+                while (runX < GameManager.Instance.GameConfigs.BoardWidth &&
                       cubesMatrix[runX, y] != null &&
                       cubesMatrix[x, y].GetComponent<MeshRenderer>().material.name.Equals(cubesMatrix[runX, y].GetComponent<MeshRenderer>().material.name))
                 {
@@ -336,12 +336,12 @@ public class CubesWallHandler
     // will shift down cubes until bubbling "null" cube up. This simply makes cubes fall to fill the shot cube position.
     private void ShiftDownCubes(uint column, uint startingRow)
     {
-        if( startingRow >= GameManager.Instance.BoardHeight)
+        if( startingRow >= GameManager.Instance.GameConfigs.BoardHeight)
         {
             return;
         }
 
-        for(uint y = startingRow; y < GameManager.Instance.BoardHeight; ++y)
+        for(uint y = startingRow; y < GameManager.Instance.GameConfigs.BoardHeight; ++y)
         {
             cubesMatrix[column, y-1] = cubesMatrix[column, y];
 

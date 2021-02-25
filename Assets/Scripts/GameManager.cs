@@ -21,20 +21,11 @@ public class GameManager : MonoBehaviour
     // ################
     public static GameManager Instance {get; private set;} = null;
 
-    // #############################
-    // ## Unity Script Parameters ##
-    // #############################
+    // ################
+    // ##  Configs ##
+    // ################
 
-    [Header("Basic Settings")]
-    public uint BoardWidth = 0;
-    public uint BoardHeight = 0;
-    public float WhiteCubesProbability = 0;
-    public float RedCubesProbability = 0;
-    public  uint PointsPerDestroyedCube = 0;
-
-    [Header("Extras")]
-    public bool FirstPersonCameraEffect = false;
-    public uint PointsPerShot = 0;
+    public Configs GameConfigs;
 
     // #################
     // ## Member Vars ##
@@ -48,8 +39,9 @@ public class GameManager : MonoBehaviour
     // #################
 
     private const string INTRO_CUBES_PREFAB_NAME = "Prefabs/IntroCubes";
-    private const uint MAX_WIDTH = 20;
-    private const uint MAX_HEIGHT = 15;
+    private const string FLOOR_PREFAB_NAME = "Prefabs/Floor";
+    private const uint MAX_WIDTH = 17;
+    private const uint MAX_HEIGHT = 10;
 
     // #################
     // ## Methods     ##
@@ -59,7 +51,7 @@ public class GameManager : MonoBehaviour
     {
         InitSingleton();
         ValidateConfig();
-        CreateIntro();
+        LoadPrefabs();
         cubesWallHandler.Initialize();
         gunHandler.Initialize(); 
     }
@@ -86,13 +78,19 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void ValidateConfig()
     {
-        if (BoardWidth == 0 ||
-           BoardHeight == 0 ||
-           WhiteCubesProbability == 0 ||
-           RedCubesProbability == 0 ||
-           PointsPerDestroyedCube == 0)
+        if (GameConfigs.BoardWidth == 0 || GameConfigs.BoardWidth > MAX_WIDTH   ||
+           GameConfigs.BoardHeight == 0 || GameConfigs.BoardHeight > MAX_HEIGHT ||
+           GameConfigs.WhiteCubesProbability == 0 ||
+           GameConfigs.RedCubesProbability == 0 ||
+           GameConfigs.PointsPerDestroyedCube == 0)
         {
-            throw new Exception("Please check game config. Please check readme file for valid config options.");
+            #if UNITY_EDITOR
+                        // NOTE: Application.Quit(); does not work in the editor
+                        Debug.LogError("Invalid configs used. Please see README file. Stopping game.");
+                        UnityEditor.EditorApplication.isPlaying = false;
+            #else
+                        Application.Quit();
+            #endif
         }
 
     }
@@ -107,14 +105,18 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Creates the game objects for the game-into animation (main screen). 
+    /// Creates the game objects for the game-into animation (main screen) + floor. 
     /// The intro composed of "red and white dancing cubes" and other falling cubes of basic colors.
     /// </summary>    
-    public void CreateIntro()
+    public void LoadPrefabs()
     {
         // Since these are not going to change, I created a prefab for all of them. All what is left to do is to instantiate it.
-        GameObject introCubes = Resources.Load(INTRO_CUBES_PREFAB_NAME) as GameObject;
-        GameObject.Instantiate(introCubes, introCubes.transform.position, Quaternion.identity);
+        GameObject introCubesPrefab = Resources.Load(INTRO_CUBES_PREFAB_NAME) as GameObject;
+        GameObject.Instantiate(introCubesPrefab, introCubesPrefab.transform.position, Quaternion.identity);
+
+        // Also floor is not going to change, create it and don't store. make it's parent the 
+        GameObject floorPrefab = Resources.Load(FLOOR_PREFAB_NAME) as GameObject;
+        GameObject.Instantiate(floorPrefab, floorPrefab.transform.position, Quaternion.identity);
     }
 
     /// <summary>
