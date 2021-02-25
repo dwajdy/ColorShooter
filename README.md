@@ -3,6 +3,8 @@ A long time ago in a galaxy far, far away.... Color cubes were the only source o
 
 In this game, you will play as an alien being from a remote galaxy who is fighting for his life. 
 
+![alt text](https://user-images.githubusercontent.com/73256994/109164856-90e0ba00-7783-11eb-8397-e71724d6f16e.png)
+
 ## Inputs & Controls
 | Input | Action |
 | --- | --- |
