@@ -24,7 +24,7 @@ Special powers table:
 | Red | Destroys all surrounding cubes. Granting points for each of them. |
 | White | Turns all surrounding cubes into one basic color. No points added to score. |
 
-## Staying Alive
+### Staying Alive
 To survive to the end, you need to keep energy bar above 0.
 
 Each time you shoot a cube, you will gain 1 energy point.
