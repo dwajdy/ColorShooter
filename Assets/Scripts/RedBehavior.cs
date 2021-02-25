@@ -7,6 +7,7 @@ using UnityEngine;
 /// </summary>
 public class RedBehavior : CubeBehavior
 {
+    // Red cube removes all surroung cubes when shot.
     public override void Hit(CubesWallHandler cubesWallHandler, CubeGenerator cubeGenerator) 
     {
         for(uint row = y==0 ? 0 : y-1; row <= y+1; ++row)

@@ -8,18 +8,31 @@ using UnityEngine.UI;
 /// </summary>
 public class ScoreBehavior : MonoBehaviour
 {
-    Text textComp;
-    uint previousScore = 0;
+    // #############################
+    // ## Public Unity Parameters ##
+    // #############################
+
+    public Text textComp;
+    
+    // ##############
+    // ## Privates ##
+    // ##############
+
+    private uint previousScore = 0;
     private CubesWallHandler cubesWallHandler = null;
 
-    // Start is called before the first frame update
+    // ##############
+    // ## Methods ##
+    // ##############
+
+    // get text component, and populate cubeWallHandler.
     void Start()
     {
         textComp = GetComponent<Text>();
         cubesWallHandler = GameManager.Instance.GetCubesWallHandler();
     }
 
-    // Update is called once per frame
+    // Update score text if it got changed.
     void LateUpdate()
     {
         if(previousScore == cubesWallHandler.Score)
@@ -27,7 +40,7 @@ public class ScoreBehavior : MonoBehaviour
             return;
         }
 
-        GetComponent<Animator>().SetTrigger("IncreaseScore");
+        GetComponent<Animator>().SetTrigger("IncreaseScore"); //triggers a colourful animation.
         textComp.text = "SCORE: " + cubesWallHandler.Score;
         previousScore = cubesWallHandler.Score;
     }

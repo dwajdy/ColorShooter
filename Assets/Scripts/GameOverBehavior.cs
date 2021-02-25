@@ -8,17 +8,29 @@ using UnityEngine.UI;
 /// </summary>
 public class GameOverBehavior : MonoBehaviour
 {
+    // #############################
+    // ## Public Unity Parameters ##
+    // #############################
+    
+    // this is being populated on the editor side.
     public Text InfoText;
+
+    // ##############
+    // ## Privates ##
+    // ##############
 
     private CubesWallHandler cubesWallHandler = null;
 
+    // ###############
+    // ## Methods   ##
+    // ###############
+
+    // gets cubesWallHandler.
     void Start() {
         cubesWallHandler = GameManager.Instance.GetCubesWallHandler();
     }
 
-    /// <summary>
     /// Updates score text UI element when score changes.
-    /// </summary>
     void LateUpdate()
     {
        if(GameManager.Instance.GetCubesWallHandler().IsGameOver)
@@ -32,9 +44,7 @@ public class GameOverBehavior : MonoBehaviour
        }
     }
 
-    /// <summary>
     /// Setting active child nodes which include: status text and button.
-    /// </summary>
     void SetIsActiveOnChilds(bool value)
     {
         int numChilds = this.transform.childCount;
@@ -44,9 +54,7 @@ public class GameOverBehavior : MonoBehaviour
         }
     }
 
-    /// <summary>
     /// Sets the text based on win/lose condition. If player finished all cubes without losing, it updates text to "GOOD GAME!", and "GAME OVER!" otherwise.
-    /// </summary>
     void SetText(bool isNoCubesLeft)
     {
         if(isNoCubesLeft)

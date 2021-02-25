@@ -6,7 +6,9 @@ using UnityEngine;
 /// This class represents the white cubes behaviour. It contains an override for the Hit() function to implement special powers.
 /// </summary>
 public class WhiteBehavior : CubeBehavior
-{    public override void Hit(CubesWallHandler cubesWallHandler, CubeGenerator cubeGenerator) 
+{    
+    // White cube replaces all surroung cubes when shot, with 1 basic color.
+    public override void Hit(CubesWallHandler cubesWallHandler, CubeGenerator cubeGenerator) 
     {
         
         cubeGenerator.GetRandomBasicColor(out var colorMaterial, out var colorAnimation);
