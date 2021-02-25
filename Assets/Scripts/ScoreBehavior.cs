@@ -3,29 +3,45 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class responsible for handling the score UI element.
+/// </summary>
 public class ScoreBehavior : MonoBehaviour
 {
-    Text textComp;
-    uint previousScore = 0;
-    GameDynamics gameDynamics;
+    // #############################
+    // ## Public Unity Parameters ##
+    // #############################
 
-    // Start is called before the first frame update
+    public Text textComp;
+    
+    // ##############
+    // ## Privates ##
+    // ##############
+
+    private uint previousScore = 0;
+    private CubesWallHandler cubesWallHandler = null;
+
+    // ##############
+    // ## Methods ##
+    // ##############
+
+    // get text component, and populate cubeWallHandler.
     void Start()
     {
         textComp = GetComponent<Text>();
-        gameDynamics = GameObject.Find("Game").GetComponent<Settings>().GetGameDynamics();
+        cubesWallHandler = GameManager.Instance.GetCubesWallHandler();
     }
 
-    // Update is called once per frame
+    // Update score text if it got changed.
     void LateUpdate()
     {
-        if(previousScore == gameDynamics.GetScore())
+        if(previousScore == cubesWallHandler.Score)
         {
             return;
         }
 
-        GetComponent<Animator>().SetTrigger("IncreaseScore");
-        textComp.text = "SCORE: " + gameDynamics.GetScore();
-        previousScore = gameDynamics.GetScore();
+        GetComponent<Animator>().SetTrigger("IncreaseScore"); //triggers a colourful animation.
+        textComp.text = "SCORE: " + cubesWallHandler.Score;
+        previousScore = cubesWallHandler.Score;
     }
 }

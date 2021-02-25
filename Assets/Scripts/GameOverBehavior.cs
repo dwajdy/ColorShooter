@@ -3,26 +3,40 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class responsible of the end-game UI elements. It shows the relevant texts and buttons based on win/lose situation.
+/// </summary>
 public class GameOverBehavior : MonoBehaviour
 {
+    // #############################
+    // ## Public Unity Parameters ##
+    // #############################
+    
+    // this is being populated on the editor side.
     public Text InfoText;
 
-    GameDynamics gameDynamics;
+    // ##############
+    // ## Privates ##
+    // ##############
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        gameDynamics = GameObject.Find("Game").GetComponent<Settings>().GetGameDynamics();
-        //textComp = GetComponent<Text>();
+    private CubesWallHandler cubesWallHandler = null;
+
+    // ###############
+    // ## Methods   ##
+    // ###############
+
+    // gets cubesWallHandler.
+    void Start() {
+        cubesWallHandler = GameManager.Instance.GetCubesWallHandler();
     }
 
-    // Update is called once per frame
+    /// Updates score text UI element when score changes.
     void LateUpdate()
     {
-       if(gameDynamics.GetIsGameOver())
+       if(GameManager.Instance.GetCubesWallHandler().IsGameOver)
        {
            SetIsActiveOnChilds(true);
-           SetText(gameDynamics.IsNoCubesLeft());
+           SetText(GameManager.Instance.GetCubesWallHandler().IsNoCubesLeft);
        }
        else
        {
@@ -30,6 +44,7 @@ public class GameOverBehavior : MonoBehaviour
        }
     }
 
+    /// Setting active child nodes which include: status text and button.
     void SetIsActiveOnChilds(bool value)
     {
         int numChilds = this.transform.childCount;
@@ -39,6 +54,7 @@ public class GameOverBehavior : MonoBehaviour
         }
     }
 
+    /// Sets the text based on win/lose condition. If player finished all cubes without losing, it updates text to "GOOD GAME!", and "GAME OVER!" otherwise.
     void SetText(bool isNoCubesLeft)
     {
         if(isNoCubesLeft)

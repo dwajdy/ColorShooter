@@ -1,60 +1,85 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class responsible of the 'wait' UI element. It knows how to update the text, and remove it when game starts.
+/// The 'wait' element, is a text that shows when the cubes wall is still being prepared and the user cannot interact.
+/// </summary>
 public class GameReady : MonoBehaviour
 {
-    public GameObject gameManager;
 
-    public GameObject soundManager;
+    // ##############
+    // ## Privates ##
+    // ##############
 
-    private GameDynamics gameDynamics;
+    private CubesWallHandler cubesWallHandler = null;
 
-    private SoundEffectsManager soundEffectsManager;
     private float secondPassed = 0.0f;
 
-    private float secondsToUpdateText = 1.5f;
     private bool previousLastGameIsReady = true;
     private Text textComp;
+
+    // ###############
+    // ## Constants ##
+    // ###############
+    private const float SECONDS_TO_UPDATE_TEXT = 1.5f;
     
-    // Start is called before the first frame update
+    // ###############
+    // ## Methods   ##
+    // ###############
+
+    // get text component and CubeWallHandler.
     void Start()
     {
-        gameDynamics = gameManager.GetComponent<Settings>().GetGameDynamics();
-        soundEffectsManager = soundManager.GetComponent<SoundEffectsManager>();
         textComp = GetComponent<Text>();
+        cubesWallHandler = GameManager.Instance.GetCubesWallHandler();
     }
 
-    // Update is called once per frame
+    // Update 'wait' UI element based on game state.
     void Update()
     {
-        if(! gameDynamics.IsGameReady() && (gameDynamics.IsGameStartedFirstTime() || previousLastGameIsReady == true))
+        if(! cubesWallHandler.IsGameReady && (cubesWallHandler.IsGameStartedFirstTime || previousLastGameIsReady == true))
         {
-            textComp.enabled = true;
-            previousLastGameIsReady = gameDynamics.IsGameReady();
-            secondPassed += Time.deltaTime;
-            if(secondPassed > secondsToUpdateText)
-            {   
-                secondPassed = 0.0f;
-                if(textComp.text.Length < 16)
-                {
-                    textComp.text += ".";
-                }
-                else
-                {
-                    textComp.text = "WAIT..";
-                }
-
-                return;
-            }
+            UpdateWaitText();
         }
-        else if(gameDynamics.IsGameReady() && (previousLastGameIsReady == false))
+        else if(cubesWallHandler.IsGameReady && (previousLastGameIsReady == false))
         {
-            textComp.enabled = false;
+            StopWaiting();
+        }
+    }
+
+    // Will update wait text (it animates it by adding simply '.')
+    // other calculations done on this functions is to update time and flags.
+    private void UpdateWaitText()
+    {
+        textComp.enabled = true;
+        previousLastGameIsReady = cubesWallHandler.IsGameReady;
+        secondPassed += Time.deltaTime;
+        if (secondPassed > SECONDS_TO_UPDATE_TEXT)
+        {
+            secondPassed = 0.0f;
+            if (textComp.text.Length < 16)
+            {
+                textComp.text += ".";
+            }
+            else
+            {
+                textComp.text = "WAIT..";
+            }
+
+            return;
+        }
+    }
+
+    // will reset text status and disable it. And will play 'start' sound effect because waiting is over and cubes wall is ready!
+    private void StopWaiting()
+    {
+        textComp.enabled = false;
             textComp.text = "WAIT..";
             previousLastGameIsReady = true;
-            soundEffectsManager.PlayStart();
-        }
+            AudioManager.Instance.PlayEffect(AudioManager.SoundEffect.START);
     }
 }

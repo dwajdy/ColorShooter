@@ -4,8 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class implements the behavior of the in-game energy bar.
+/// </summary>
 public class EnergyScript : MonoBehaviour
 {
+
+    // ##############
+    // ## Privates ##
+    // ##############
 
     private uint maxEnergy = 6;
     private uint currEnergy = 6;
@@ -14,45 +21,75 @@ public class EnergyScript : MonoBehaviour
 
     private float timePassedFromLastDecrease = 0;
 
-    GameDynamics gameDynamics;
-
     private DateTime lastCubeHitTime = DateTime.Now;
     
     private Text textComp;
 
-    // Start is called before the first frame update
+    private CubesWallHandler cubesWallHandler = null;
+
+    // ###############
+    // ## Methods   ##
+    // ###############
+
+    // Gets the energy text component, and initialize the CubesWallHandler
     void Start()
     {
         textComp = GetComponent<Text>();
-        gameDynamics = GameObject.Find("Game").GetComponent<Settings>().GetGameDynamics();
+        cubesWallHandler = GameManager.Instance.GetCubesWallHandler();
     }
 
-    // Update is called once per frame
+    // Updates energy bar
     void Update()
     {
-        if(gameDynamics.GetIsGameOver() || !gameDynamics.IsGameReady())
+        // If game is over or game is not ready, reset everthing and return.
+        if(cubesWallHandler.IsGameOver || !cubesWallHandler.IsGameReady)
         {
-            lastCubeHitTime = gameDynamics.GetLastCubeHitTime();
-            timePassedFromLastDecrease = 0.0f;
-            currEnergy = maxEnergy;
+            Reset();
             return;
         }
 
+        // if enery reached 0, then user failed. this is a special condition. we need to keep returning in order not to update.
         if(currEnergy == 0)
         {
             return;
         }
 
-        DateTime currCubeHitTime = gameDynamics.GetLastCubeHitTime();
+        // if user has a shot a new cube, increase energy.
+        IncreaseEnergyBar();
+        
+        // update energy bar text to reflect new energy value.
+        UpdateText();
+
+        // decrease energy bar and set gameover=on if evergy reached 0
+        DecreaseEnergyBar();
+        
+    }
+
+    // reset energy bar state and flags.
+    private void Reset()
+    {
+        lastCubeHitTime = cubesWallHandler.TimeOfPreviousClick;
+        timePassedFromLastDecrease = 0.0f;
+        currEnergy = maxEnergy;
+    }
+
+    // this will increase energy bar if conditions are met.
+    private void IncreaseEnergyBar()
+    {
+        // if there's a new cube shot by user, increase energy bar.
+        DateTime currCubeHitTime = cubesWallHandler.TimeOfPreviousClick;
         if(currCubeHitTime != lastCubeHitTime &&
            currEnergy < maxEnergy)
         {
             currEnergy++;
             lastCubeHitTime = currCubeHitTime;
         }
-        
-        UpdateText();
+    }
 
+    // this will decrease energy bar if conditions are met. 
+    //  and updates GameOver state if energy reached 0.
+    private void DecreaseEnergyBar()
+    {
         timePassedFromLastDecrease += Time.deltaTime;
         if(timePassedFromLastDecrease < energyDecreaseTime)
         {
@@ -64,14 +101,14 @@ public class EnergyScript : MonoBehaviour
             currEnergy--;
             UpdateText();
         }
-        
+
         if(0 == currEnergy)
         {
-            gameDynamics.SetIsGameOver(true);
+            cubesWallHandler.IsGameOver = true;
         }
-        
     }
 
+    // updates energy bar text to reflect current energy value.
     void UpdateText()
     {
         textComp.text = "";
