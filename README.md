@@ -1,7 +1,7 @@
 # Galactic Color Shooter
 A long time ago in a galaxy far, far away.... Color cubes were the only source of energy for survival....
 
-In this game, you will play as an alien being from a remote galaxy who is fighting for his survival. 
+In this game, you will play as an alien being from a remote galaxy who is fighting for his life. 
 
 ## Inputs & Controls
 | Input | Action |
@@ -12,32 +12,33 @@ In this game, you will play as an alien being from a remote galaxy who is fighti
 ## Gameplay
 In this match-3 game, your goal is to achieve the highest possible score, while staying alive.
 ### Shooting Cubes
-Shooting cubes will simpy destroy them. But some colors has special powers that is triggered in addition of destroying the cube it-self.
+Shooting cubes will simpy destroy them. But some colors has special powers that is triggered in addition of destroying the cube itself.
 
 Basic colors with no special powers:
+
 White, Black, Cyan, Magenta and Yellow.
 
 Special powers table:
 | Color | Special Power |
 | --- | --- |
-| Red | Destory all surrounding cubes. Granting points for each of them. |
-| White | Turns all surrounding cubes into one basic color. |
+| Red | Destroys all surrounding cubes. Granting points for each of them. |
+| White | Turns all surrounding cubes into one basic color. No points added to score. |
 
 ## Staying Alive
 To survive to the end, you need to keep energy bar above 0.
 
-Each time you shoot a cube, you will gain 1 energy.
+Each time you shoot a cube, you will gain 1 energy point.
 
 ### Scoring
-To score points, you need to create 3 or more vertical or horizontal sequences of same cube colors, by destroying cubes.
+To score points, you need to create 3 or more vertical or horizontal sequences of same cube colors.
 
 Some special colors can also increase your score. See table below for all information.
 
 Points table:
 | Event | Points |
 | --- | --- |
-| 3+ Matching Color Sequence | 'Points Per Destroyed Cube' from game config. |
-| Destorying Red Cube | Number of destroyed cubes X 'Points Per Destroyed Cube' from game config. |
+| 3+ Matching Color Sequence | [Points Per Destroyed Cube] (see Game Config section) |
+| Destorying Red Cube | [Number of destroyed cubes] X [Points Per Destroyed Cube] (see Game Config section) |
 
 ## Game Config
 
@@ -55,3 +56,21 @@ Points table:
 | --- | --- | --- | --- |
 | First Person Camera Effect | Will enable FPS camera effect | true | 
 | Points Per Shot | Will increase score on each cube shot | 1 |
+
+## Game Features
+- Configurable game settings through game config asset
+  - Cubes wall width/height
+  - Red and white cubes probablities
+  - Points to gain when matching cubes
+  - Extras: FPS-camera + Points for shooting cube
+- Dedicated 'how-to-play' scene with gameplay video
+- Special colorful cubes glowing animations
+- Sound effects to enrich game play experience
+- Special gun following mouse movement
+- Extra mode to enable FPS-like camera
+
+## Known Issue
+| Issue | Cause | Chance To Occur
+| --- | --- | --- |
+| Playing sound effects in delay | Multiple shooting, destroying and matching events in short time frame | Medium
+| Slight camera view center shifting | Will occur when moving mouse exteremly fast on screen edges back and forth | Low
