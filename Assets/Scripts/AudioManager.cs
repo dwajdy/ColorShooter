@@ -84,12 +84,13 @@ public class AudioManager : MonoBehaviour
 
     void Awake()
     {
-        InitSingleton();
+        if(!InitSingleton())
+        {
+            return;
+        }
+
         SetupMusicSource();
         SetupEffectsSource();
-
-        // to keep music playing when moving between scenes.
-        DontDestroyOnLoad(this);
     }
 
     private void SetupMusicSource()
@@ -107,7 +108,7 @@ public class AudioManager : MonoBehaviour
         effectAudioSource = gameObject.AddComponent<AudioSource>();
     }
 
-    private void InitSingleton()
+    private bool InitSingleton()
     {
         // ########################
         // ## Singleton Handling ##
@@ -115,10 +116,15 @@ public class AudioManager : MonoBehaviour
         
         if (Instance != null)
         {
-            throw new Exception("Can't have two AudioManager objects in the scene!");
+           Destroy(this);
+           return false;
         }
-        
-        Instance = this;
+
+        Instance = this;        
+        // to keep music playing when moving between scenes.
+        DontDestroyOnLoad(this);
+        return true;
+
     }
     
     /// Update will make sure audio manager playing the next effect on queue.

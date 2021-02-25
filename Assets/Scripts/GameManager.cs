@@ -139,12 +139,10 @@ public class GameManager : MonoBehaviour
 
                    if(cubesWallHandler.IsCubeOnWallHit(hitGameObject))
                    {
-                       cubesWallHandler.HandleCubeHit(hitGameObject);
-                       
-                       Camera.main.GetComponent<Animator>().SetTrigger("IsCubeShot");
-
                        AudioManager.Instance.PlayEffect(AudioManager.SoundEffect.SHOOT);
+                       Camera.main.GetComponent<Animator>().SetTrigger("IsCubeShot");
                        gunHandler.StartFire(hitGameObject);
+                       cubesWallHandler.HandleCubeHit(hitGameObject);
                    }
             }
         }
