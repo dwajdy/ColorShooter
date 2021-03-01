@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
 
     private const string INTRO_CUBES_PREFAB_NAME = "Prefabs/IntroCubes";
     private const string FLOOR_PREFAB_NAME = "Prefabs/Floor";
+    private const string FLOOR_OPENGL_PREFAB_NAME = "Prefabs/Floor_OpenGL";
     private const uint MAX_WIDTH = 17;
     private const uint MAX_HEIGHT = 10;
 
@@ -115,7 +116,12 @@ public class GameManager : MonoBehaviour
         GameObject.Instantiate(introCubesPrefab, introCubesPrefab.transform.position, Quaternion.identity);
 
         // Also floor is not going to change, create it and don't store. make it's parent the 
-        GameObject floorPrefab = Resources.Load(FLOOR_PREFAB_NAME) as GameObject;
+        string floorPrefabName = FLOOR_PREFAB_NAME;
+        if (Application.platform == RuntimePlatform.WebGLPlayer)
+        {
+            floorPrefabName = FLOOR_OPENGL_PREFAB_NAME;
+        }
+        GameObject floorPrefab = Resources.Load(floorPrefabName) as GameObject;
         GameObject.Instantiate(floorPrefab, floorPrefab.transform.position, Quaternion.identity);
     }
 
