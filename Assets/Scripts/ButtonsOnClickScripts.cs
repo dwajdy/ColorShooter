@@ -21,6 +21,7 @@ public class ButtonsOnClickScripts : MonoBehaviour
     // ###############
     // ## Constants ##
     // ###############
+    private const string CREDITS_SCENE_NAME = "CreditsScene";
     private const string HOW_TO_PLAY_SCENE_NAME = "HowToPlayScene";
     private const string ENABLE_ON_START_GAME_TAG = "EnableOnStartGame";
     private const string DISABLE_ON_START_GAME_TAG = "DisableOnStartGame";
@@ -84,6 +85,17 @@ public class ButtonsOnClickScripts : MonoBehaviour
     {
         AudioManager.Instance.PlayEffect(AudioManager.SoundEffect.SELECT);
         SceneManager.LoadScene(HOW_TO_PLAY_SCENE_NAME);
+    }
+
+    /// <summary>
+    /// It performs the following: 
+    /// (1) plays "select" sound effect
+    /// (2) loads "credits" scene.
+    /// </summary>
+    public void onClickCredits()
+    {
+        AudioManager.Instance.PlayEffect(AudioManager.SoundEffect.SELECT);
+        SceneManager.LoadScene(CREDITS_SCENE_NAME);
     }
 
     /// <summary>
